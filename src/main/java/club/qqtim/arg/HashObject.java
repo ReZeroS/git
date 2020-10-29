@@ -2,6 +2,8 @@ package club.qqtim.arg;
 
 import club.qqtim.util.FileUtil;
 import com.google.common.io.Files;
+import com.google.common.primitives.Bytes;
+import com.google.common.primitives.Chars;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -23,16 +25,21 @@ public class HashObject implements Callable<String> {
     @CommandLine.Parameters(index = "0")
     private File file;
 
+    @CommandLine.Parameters(index = "1", defaultValue = "blob")
+    private String type;
+
     public String call() throws Exception {
+        char nullChar = 0;
         byte[] fileContents = Files.toByteArray(file);
-        byte[] digest = MessageDigest.getInstance("SHA-1").digest(fileContents);
+        byte[] targetFileContents = Bytes.concat(type.getBytes(), Chars.toByteArray(nullChar), fileContents);
+        byte[] digest = MessageDigest.getInstance("SHA-1").digest(targetFileContents);
 
         // convert digest bytes to hex string
         String objectId = new BigInteger(1, digest).toString(16);
         log.info("objectId is {}", objectId);
 
         // create file with file name as object id
-        FileUtil.createFile(fileContents, club.qqtim.data.Data.OBJECTS + "/" + objectId);
+        FileUtil.createFile(targetFileContents, club.qqtim.data.Data.OBJECTS + "/" + objectId);
         return objectId;
     }
 
