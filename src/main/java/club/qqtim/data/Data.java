@@ -3,6 +3,8 @@ package club.qqtim.data;
 import club.qqtim.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+
 
 @Slf4j
 public class Data {
@@ -24,5 +26,10 @@ public class Data {
         FileUtil.mkdir(OBJECTS);
     }
 
+    public String getObject(String hash, String type) throws IOException {
+        String path = OBJECTS + "/" + hash;
+        log.info("get the content of {} file", path);
+        return FileUtil.getFileAsString(path, type);
+    }
 
 }

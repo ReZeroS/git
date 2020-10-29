@@ -3,7 +3,6 @@ package club.qqtim.util;
 import club.qqtim.common.ConstantVal;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteSource;
-import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 import com.google.common.primitives.Chars;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 
+/**
+ * @author lijie78
+ */
 @Slf4j
 public final class FileUtil {
 

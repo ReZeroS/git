@@ -13,6 +13,7 @@ public class Init implements Runnable {
     @CommandLine.Option(names = "init", description = "zit init")
     private boolean init;
 
+    @Override
     public void run() {
         new club.qqtim.data.Data().init();
     }
