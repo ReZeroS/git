@@ -51,7 +51,7 @@ public class WriteTree implements Runnable {
 
         // only traverse the filter path
         final List<String> filterPathList = Arrays.stream(pathList)
-                .filter(this::isNotIgnored)
+                .filter(club.qqtim.data.Data::isNotIgnored)
                 .map(e -> String.format("%s/%s", dirPath, e)).collect(Collectors.toList());
 
         List<String> treeNodes = new ArrayList<>();
@@ -90,25 +90,5 @@ public class WriteTree implements Runnable {
     }
 
 
-    /**
-     * @param path file path
-     * @return whether it's zit meta file
-     */
-    private boolean isNotIgnored(String path) {
-        return !isIgnored(path);
-    }
-    /**
-     * @param path file path
-     * @return whether it's zit meta file
-     */
-    private boolean isIgnored(String path) {
-        return path != null &&
-                (
-                        path.startsWith(club.qqtim.data.Data.ZIT_DIR)
-                                || path.startsWith(".git")
-                                || path.startsWith("doc")
-                                || path.startsWith("target")
 
-                );
-    }
 }

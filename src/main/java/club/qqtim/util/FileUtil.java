@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * @author lijie78
@@ -38,6 +41,31 @@ public final class FileUtil {
             log.error("can not get the current dir, please check your access right");
         }
         return null;
+    }
+
+    public static void deleteDir(String path){
+        deleteDir(new File(path), null);
+    }
+
+    public static void deleteDir(String path, Predicate<String> ignorePredicate){
+        deleteDir(new File(path), ignorePredicate);
+    }
+
+    public static void deleteDir(File file, Predicate<String> ignorePredicate){
+        if (ignorePredicate != null) {
+            final boolean ignorePath = ignorePredicate.test(file.getPath());
+            if (ignorePath) {
+                return;
+            }
+        }
+        if (file.isDirectory()) {
+            Arrays.stream(Objects.requireNonNull(file.listFiles()))
+                    .forEach(currentFile -> deleteDir(currentFile, ignorePredicate));
+        }
+        final boolean delete = file.delete();
+        if (!delete) {
+            log.error("delete file failed, please check your access right.");
+        }
     }
 
     public static void createFile(byte[] fileContents, String fileName) {

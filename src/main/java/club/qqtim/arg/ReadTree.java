@@ -61,12 +61,25 @@ public class ReadTree implements Runnable {
     }
 
     private void readTree(String hash){
+        emptyCurrentDir();
         final Map<String, String> treeMap = getTree(hash, ConstantVal.BASE_PATH);
         treeMap.forEach((path, objectId) -> {
             FileUtil.createParentDirs(path);
             final byte[] objectBytes = new club.qqtim.data.Data().getObject(objectId);
             FileUtil.createFile(objectBytes, path);
         });
+    }
+
+    private void emptyCurrentDir() {
+        File file = new File(ConstantVal.BASE_PATH);
+        final String[] paths = file.list();
+        if (paths != null) {
+            Arrays.stream(paths).forEach(path -> {
+                if (club.qqtim.data.Data.isNotIgnored(path)) {
+                    FileUtil.deleteDir(path);
+                }
+            });
+        }
     }
 
 

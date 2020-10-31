@@ -53,4 +53,26 @@ public class Data {
         return null;
     }
 
+    /**
+     * @param path file path
+     * @return whether it's zit meta file
+     */
+    public static boolean isNotIgnored(String path) {
+        return !isIgnored(path);
+    }
+    /**
+     * @param path file path
+     * @return whether it's zit meta file
+     */
+    public static boolean isIgnored(String path) {
+        return path != null &&
+                (
+                        path.startsWith(club.qqtim.data.Data.ZIT_DIR)
+                                || path.startsWith(".zit")
+                                || path.startsWith("doc")
+                                || path.startsWith("target")
+
+                );
+    }
+
 }
