@@ -9,7 +9,8 @@ import picocli.CommandLine;
 @CommandLine.Command(name = "zit", subcommands = {
         Init.class,
         HashObject.class,
-        CatFile.class
+        CatFile.class,
+        WriteTree.class
 })
 public class Zit {
 }

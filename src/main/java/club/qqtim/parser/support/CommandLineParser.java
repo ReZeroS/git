@@ -10,6 +10,7 @@ import java.util.Arrays;
 @Slf4j
 public class CommandLineParser implements Parser {
 
+    @Override
     public void execute(String[] args) {
         log.debug(Arrays.toString(args));
         new CommandLine(new Zit()).execute(args);
