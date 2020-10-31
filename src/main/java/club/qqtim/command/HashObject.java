@@ -1,5 +1,6 @@
-package club.qqtim.arg;
+package club.qqtim.command;
 
+import club.qqtim.common.ConstantVal;
 import club.qqtim.util.FileUtil;
 import com.google.common.io.Files;
 import com.google.common.primitives.Bytes;
@@ -31,21 +32,35 @@ public class HashObject implements Callable<String> {
     private String type;
 
     @Override
-    public String call() throws Exception {
-        byte[] fileContents = Files.toByteArray(file);
-        return hashObject(fileContents, this.type);
+    public String call() {
+        return doHashObject();
     }
 
-    protected String hashObject(byte[] fileContents, String type) throws NoSuchAlgorithmException, IOException {
+    private String doHashObject() {
+        try {
+            byte[] fileContents = Files.toByteArray(file);
+            return hashObject(fileContents, this.type);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
+    protected String hashObject(byte[] fileContents, String type) {
         char nullChar = 0;
         byte[] targetFileContents = Bytes.concat(type.getBytes(), Chars.toByteArray(nullChar), fileContents);
-        byte[] digest = MessageDigest.getInstance("SHA-1").digest(targetFileContents);
+        byte[] digest = new byte[0];
+        try {
+            digest = MessageDigest.getInstance(ConstantVal.HASH_ALGORITHM).digest(targetFileContents);
+        } catch (NoSuchAlgorithmException e) {
+            log.error("no such algorithm ");
+        }
 
         // convert digest bytes to hex string
         String objectId = new BigInteger(1, digest).toString(16);
         log.info("objectId is {}", objectId);
         // create file with file name as object id
-        FileUtil.createFile(targetFileContents, club.qqtim.data.Data.OBJECTS + "/" + objectId);
+        FileUtil.createFile(targetFileContents, club.qqtim.data.Data.OBJECTS_DIR + "/" + objectId);
         return objectId;
     }
 

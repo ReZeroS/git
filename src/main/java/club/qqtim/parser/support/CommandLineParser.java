@@ -1,6 +1,6 @@
 package club.qqtim.parser.support;
 
-import club.qqtim.arg.Zit;
+import club.qqtim.command.Zit;
 import club.qqtim.parser.Parser;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;

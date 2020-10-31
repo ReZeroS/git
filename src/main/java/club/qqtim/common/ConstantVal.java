@@ -4,28 +4,31 @@ package club.qqtim.common;
  * @author lijie78
  */
 public final class ConstantVal {
+    public static final String HASH_ALGORITHM = "SHA-1";
 
     // param type
 
-    public static String NONE = "None";
+    public static final String NONE = "None";
 
 
     // object type
 
-    public static String TREE = "tree";
+    public static final String TREE = "tree";
 
-    public static String BLOB = "blob";
+    public static final String BLOB = "blob";
+
+    public static final String COMMIT = "commit";
 
 
 
     // symbol type
 
-    public static String NEWLINE = "\n";
+    public static final String NEWLINE = "\n";
 
-    public static String SINGLE_SPACE = " ";
+    public static final String SINGLE_SPACE = " ";
 
-    public static String UNIX_PATH = "/";
+    public static final String UNIX_PATH_SEPARATOR = "/";
 
-    public static String BASE_PATH = "./";
+    public static final String BASE_PATH = "./";
 
 }

@@ -1,4 +1,4 @@
-package club.qqtim.arg;
+package club.qqtim.command;
 
 
 import picocli.CommandLine;
@@ -11,7 +11,9 @@ import picocli.CommandLine;
         HashObject.class,
         CatFile.class,
         WriteTree.class,
-        ReadTree.class
+        ReadTree.class,
+        Commit.class,
+        Log.class
 })
 public class Zit {
 }

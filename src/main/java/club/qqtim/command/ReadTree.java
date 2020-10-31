@@ -1,10 +1,9 @@
-package club.qqtim.arg;
+package club.qqtim.command;
 
 
 import club.qqtim.common.ConstantVal;
 import club.qqtim.data.ZitObject;
 import club.qqtim.util.FileUtil;
-import com.google.common.io.Files;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;

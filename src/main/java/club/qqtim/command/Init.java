@@ -1,4 +1,4 @@
-package club.qqtim.arg;
+package club.qqtim.command;
 
 import lombok.Data;
 import picocli.CommandLine;

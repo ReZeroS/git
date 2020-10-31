@@ -1,4 +1,4 @@
-package club.qqtim.arg;
+package club.qqtim.command;
 
 
 import com.google.common.base.Joiner;
@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 /**
@@ -19,19 +20,16 @@ import java.util.stream.Collectors;
 @Data
 @Slf4j
 @CommandLine.Command(name = "write-tree")
-public class WriteTree implements Runnable {
+public class WriteTree implements Callable<String> {
 
     @CommandLine.Parameters(index = "0", defaultValue = ".")
     private String path;
 
     @Override
-    public void run() {
-        try {
-            writeTree(path);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
+    public String call() {
+        return writeTree(path);
     }
+
 
     /**
      *
@@ -39,7 +37,7 @@ public class WriteTree implements Runnable {
      * @return tree Id
      * @throws Exception
      */
-    private String writeTree(String dirPath) throws Exception {
+    private String writeTree(String dirPath) {
         File file = new File(dirPath);
         String[] pathList = file.list();
 
@@ -66,7 +64,6 @@ public class WriteTree implements Runnable {
                 hashObject.setFile(currentFile);
                 hashObject.setType(type);
                 objectId = hashObject.call();
-
             } else if (currentFile.isDirectory()) {
                 type = "tree";
                 objectId = writeTree(path);
