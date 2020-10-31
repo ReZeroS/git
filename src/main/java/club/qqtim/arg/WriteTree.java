@@ -43,7 +43,9 @@ public class WriteTree implements Runnable {
         File file = new File(dirPath);
         String[] pathList = file.list();
 
-        if (pathList == null) {
+        // if dirPath is not a directory then return null
+        // if dirPath is an empty directory then return array with length equal zero
+        if (pathList == null || pathList.length == 0) {
             return null;
         }
 
@@ -69,9 +71,17 @@ public class WriteTree implements Runnable {
                 type = "tree";
                 objectId = writeTree(path);
             }
-            treeNodes.add(String.format("%s %s %s\n", type, objectId, currentFile.getName()));
+            // above key: ensure will write object id
+            // for wrong example: empty directory
+            if (objectId != null) {
+                treeNodes.add(String.format("%s %s %s\n", type, objectId, currentFile.getName()));
+            }
         }
 
+        // path got all dir are empty directory, see the above key
+        if (treeNodes.isEmpty()) {
+            return null;
+        }
         HashObject hashObject = new HashObject();
         // file with content: every object in one line
         final String fileContent = Joiner.on("").join(treeNodes);

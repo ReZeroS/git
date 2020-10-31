@@ -1,5 +1,6 @@
 package club.qqtim.data;
 
+import club.qqtim.common.ConstantVal;
 import club.qqtim.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,10 +27,30 @@ public class Data {
         FileUtil.mkdir(OBJECTS);
     }
 
-    public String getObject(String hash, String type) throws IOException {
+    public byte[] getObject(String hash) {
+        return getObject(hash, ConstantVal.BLOB);
+    }
+
+    public byte[] getObject(String hash, String type) {
         String path = OBJECTS + "/" + hash;
         log.info("get the content of {} file", path);
-        return FileUtil.getFileAsString(path, type);
+        try {
+            return FileUtil.getFileByteSource(path, type).read();
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
+    public String getObjectAsString(String hash, String type) {
+        String path = OBJECTS + "/" + hash;
+        log.info("get the content of {} file", path);
+        try {
+            return FileUtil.getFileAsString(path, type);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+        return null;
     }
 
 }

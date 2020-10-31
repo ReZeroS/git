@@ -40,17 +40,33 @@ public final class FileUtil {
         return null;
     }
 
-    public static void createFile(byte[] fileContents, String fileName) throws IOException {
+    public static void createFile(byte[] fileContents, String fileName) {
         File hashObject = new File(fileName);
-        Files.write(fileContents, hashObject);
+        try {
+            Files.write(fileContents, hashObject);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    public static void createParentDirs(String path) {
+        try {
+            Files.createParentDirs(new File(path));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
     }
 
 
     public static String getFileAsString(String path, String type) throws IOException {
+        return getFileByteSource(path, type).asCharSource(Charsets.UTF_8).read();
+    }
+
+    public static ByteSource getFileByteSource(String path, String type) throws IOException {
         char nullChar = 0;
         ByteSource byteSource = Files.asByteSource(new File(path));
         if (ConstantVal.NONE.equals(type)) {
-            return byteSource.asCharSource(Charsets.UTF_8).read();
+            return byteSource;
         }
         // todo: refactor the below code to extract a method like obj.partition in python
         byte[] fileWithHeader = byteSource.read();
@@ -61,7 +77,6 @@ public final class FileUtil {
         fileWithHeaderBuffer.get(header, 0, header.length);
         fileWithHeaderBuffer.get(nullBytes, 0, nullBytes.length);
         fileWithHeaderBuffer.get(fileContent, 0, fileContent.length);
-
-        return ByteSource.wrap(fileContent).asCharSource(Charsets.UTF_8).read();
+        return ByteSource.wrap(fileContent);
     }
 }

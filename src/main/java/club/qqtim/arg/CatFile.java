@@ -23,8 +23,8 @@ public class CatFile implements Callable<String> {
     private String type;
 
     @Override
-    public String call() throws Exception {
-        final String fileContent = new club.qqtim.data.Data().getObject(hash, type);
+    public String call() {
+        final String fileContent = new club.qqtim.data.Data().getObjectAsString(hash, type);
         log.info(fileContent);
         return fileContent;
     }

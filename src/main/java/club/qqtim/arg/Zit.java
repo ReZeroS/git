@@ -10,7 +10,8 @@ import picocli.CommandLine;
         Init.class,
         HashObject.class,
         CatFile.class,
-        WriteTree.class
+        WriteTree.class,
+        ReadTree.class
 })
 public class Zit {
 }
