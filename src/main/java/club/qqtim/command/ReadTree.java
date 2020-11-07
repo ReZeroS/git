@@ -38,7 +38,7 @@ public class ReadTree implements Runnable {
 
     private List<ZitObject> iteratorTree(String treeId) {
         final String tree = new club.qqtim.data.Data().getObjectAsString(treeId, "tree");
-        return Arrays.stream(tree.split(ConstantVal.NEWLINE))
+        return Arrays.stream(tree.split(ConstantVal.NEW_LINE))
                 .map(object -> object.split(ConstantVal.SINGLE_SPACE))
                 .map(objectFields -> new ZitObject(objectFields[0], objectFields[1], objectFields[2]))
                 .collect(Collectors.toList());

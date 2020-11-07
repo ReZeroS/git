@@ -13,6 +13,8 @@ public final class ConstantVal {
 
     // object type
 
+    public static final String PARENT = "parent";
+
     public static final String TREE = "tree";
 
     public static final String BLOB = "blob";
@@ -23,7 +25,7 @@ public final class ConstantVal {
 
     // symbol type
 
-    public static final String NEWLINE = "\n";
+    public static final String NEW_LINE = "\n";
 
     public static final String SINGLE_SPACE = " ";
 
