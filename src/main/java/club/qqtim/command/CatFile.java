@@ -16,14 +16,15 @@ import java.util.concurrent.Callable;
 public class CatFile implements Callable<String> {
 
     @CommandLine.Parameters(index = "0")
-    private String hash;
+    private String id;
 
     @CommandLine.Parameters(index = "1", defaultValue = "blob")
     private String type;
 
     @Override
     public String call() {
-        final String fileContent = new club.qqtim.data.Data().getObjectAsString(hash, type);
+        String id = club.qqtim.data.Data.getId(this.id);
+        final String fileContent = new club.qqtim.data.Data().getObjectAsString(id, type);
         log.info(fileContent);
         return fileContent;
     }

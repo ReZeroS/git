@@ -59,7 +59,8 @@ public class ReadTree implements Runnable {
         return map;
     }
 
-    private void readTree(String hash){
+    public void readTree(String id){
+        final String hash = club.qqtim.data.Data.getId(id);
         emptyCurrentDir();
         final Map<String, String> treeMap = getTree(hash, ConstantVal.BASE_PATH);
         treeMap.forEach((path, objectId) -> {

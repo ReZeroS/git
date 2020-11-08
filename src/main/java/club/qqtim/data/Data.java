@@ -19,21 +19,27 @@ public class Data {
 
     public static final String OBJECTS_DIR = ZIT_DIR + "/objects";
 
-    public static final String HEAD_FILE = ZIT_DIR + "/HEAD";
 
-    public static void setHead(String commitId) {
-        FileUtil.createFile(commitId.getBytes(), HEAD_FILE);
+    public static void updateRef(String ref, String commitId) {
+        FileUtil.createFile(commitId.getBytes(), String.format("%s/%s", ZIT_DIR, ref));
     }
 
-    public static String getHead() {
-        File file = new File(HEAD_FILE);
-        final CharSource charSource = Files.asCharSource(file, Charsets.UTF_8);
+
+
+    public static String getRef(String ref) {
+        File file = new File(String.format("%s/%s", ZIT_DIR, ref));
         try {
+            final CharSource charSource = Files.asCharSource(file, Charsets.UTF_8);
             return Objects.requireNonNull(charSource.readFirstLine()).trim();
         } catch (IOException e) {
             log.error(e.getMessage());
         }
         return null;
+    }
+
+    public static String getId(String refOrId) {
+        final String ref = getRef(refOrId);
+        return ref == null? refOrId: ref;
     }
 
     public void init(){

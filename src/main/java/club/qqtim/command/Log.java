@@ -18,11 +18,15 @@ import picocli.CommandLine;
 public class Log implements Runnable{
 
     @CommandLine.Parameters(index = "0", defaultValue = ConstantVal.NONE)
-    private String commitId;
+    private String id;
 
     @Override
     public void run() {
-        String id = ConstantVal.NONE.equals(commitId)? club.qqtim.data.Data.getHead(): commitId;
+        // if no args, set HEAD
+        // else use tag or hash as object id
+        String id = ConstantVal.NONE.equals(this.id)?
+                club.qqtim.data.Data.getRef(ConstantVal.HEAD)
+                : club.qqtim.data.Data.getId(this.id);
         while (id != null) {
             CommitObject commit = Commit.getCommit(id);
             log.info(String.format("%s %s\n", ConstantVal.COMMIT, id));

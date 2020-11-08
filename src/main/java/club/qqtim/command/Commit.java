@@ -51,7 +51,7 @@ public class Commit implements Callable<String> {
         writeTree.setPath(ConstantVal.BASE_PATH);
         String commitMessage = String.format("%s %s\n", ConstantVal.TREE, writeTree.call());
 
-        String headId = club.qqtim.data.Data.getHead();
+        String headId = club.qqtim.data.Data.getRef(ConstantVal.HEAD);
         if (headId != null) {
             commitMessage += String.format("%s %s\n", ConstantVal.PARENT, headId);
         }
@@ -60,7 +60,7 @@ public class Commit implements Callable<String> {
 
         HashObject hashObject = new HashObject();
         final String commitId = hashObject.hashObject(commitMessage.getBytes(), ConstantVal.COMMIT);
-        club.qqtim.data.Data.setHead(commitId);
+        club.qqtim.data.Data.updateRef(ConstantVal.HEAD, commitId);
         return commitId;
     }
 }

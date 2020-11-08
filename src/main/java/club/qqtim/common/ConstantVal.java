@@ -6,6 +6,10 @@ package club.qqtim.common;
 public final class ConstantVal {
     public static final String HASH_ALGORITHM = "SHA-1";
 
+    // ref type
+
+    public static final String HEAD = "HEAD";
+
     // param type
 
     public static final String NONE = "None";

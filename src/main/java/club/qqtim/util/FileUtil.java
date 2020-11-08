@@ -71,6 +71,9 @@ public final class FileUtil {
     public static void createFile(byte[] fileContents, String fileName) {
         File hashObject = new File(fileName);
         try {
+            // first create the parent directory
+            Files.createParentDirs(hashObject);
+            // then create the file
             Files.write(fileContents, hashObject);
         } catch (IOException e) {
             log.error(e.getMessage());
