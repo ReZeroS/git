@@ -19,7 +19,7 @@ public class Tag implements Runnable {
     @CommandLine.Parameters(index = "0", description = "name")
     private String name;
 
-    @CommandLine.Parameters(index = "1", defaultValue = ConstantVal.NONE, description = "commit id")
+    @CommandLine.Parameters(index = "1", defaultValue = ConstantVal.HEAD_ALIAS, description = "commit id")
     private String id;
 
 
@@ -27,6 +27,8 @@ public class Tag implements Runnable {
     @Override
     public void run() {
         String id = club.qqtim.data.Data.getId(this.id);
-        club.qqtim.data.Data.updateRef(String.format("refs/tags/%s", name), id);
+        if (id != null) {
+            club.qqtim.data.Data.updateRef(String.format("refs/tags/%s", name), id);
+        }
     }
 }

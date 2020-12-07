@@ -43,6 +43,9 @@ public class Data {
      * @return ref
      */
     public static String getId(String refOrId) {
+        if (ConstantVal.HEAD_ALIAS.equals(refOrId)) {
+            refOrId = ConstantVal.HEAD;
+        }
         for (String path : ConstantVal.REF_REGISTRY_DIRECTORIES) {
             final String ref = Data.getRef(String.format(path, refOrId));
             if (Objects.nonNull(ref)) {

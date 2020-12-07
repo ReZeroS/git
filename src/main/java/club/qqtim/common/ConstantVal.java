@@ -13,6 +13,7 @@ public final class ConstantVal {
     // ref type
 
     public static final String HEAD = "HEAD";
+    public static final String HEAD_ALIAS = "@";
 
     // param type
 
