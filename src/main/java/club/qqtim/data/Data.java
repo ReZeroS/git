@@ -1,6 +1,7 @@
 package club.qqtim.data;
 
 import club.qqtim.common.ConstantVal;
+import club.qqtim.common.RegexConstantVal;
 import club.qqtim.util.FileUtil;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharSource;
@@ -37,9 +38,21 @@ public class Data {
         return null;
     }
 
+    /**
+     * @param refOrId ref or id
+     * @return ref
+     */
     public static String getId(String refOrId) {
-        final String ref = getRef(refOrId);
-        return ref == null? refOrId: ref;
+        for (String path : ConstantVal.REF_REGISTRY_DIRECTORIES) {
+            final String ref = Data.getRef(String.format(path, refOrId));
+            if (Objects.nonNull(ref)) {
+                return ref;
+            }
+        }
+        if (RegexConstantVal.ALL_HEX.matcher(refOrId).find()) {
+            return refOrId;
+        }
+        return null;
     }
 
     public void init(){

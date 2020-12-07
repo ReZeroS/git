@@ -1,5 +1,9 @@
 package club.qqtim.common;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author lijie78
  */
@@ -26,7 +30,6 @@ public final class ConstantVal {
     public static final String COMMIT = "commit";
 
 
-
     // symbol type
 
     public static final String NEW_LINE = "\n";
@@ -36,5 +39,13 @@ public final class ConstantVal {
     public static final String UNIX_PATH_SEPARATOR = "/";
 
     public static final String BASE_PATH = "./";
+
+    public static final String BASE_FORMAT = "%s";
+    public static final String BASE_REFS_PATH = "refs/%s";
+    public static final String BASE_REFS_TAGS_PATH = "refs/tags/%s";
+    public static final String BASE_REFS_HEADS_PATH = "refs/heads/%s";
+
+    public static final List<String> REF_REGISTRY_DIRECTORIES =
+            Arrays.asList(BASE_FORMAT, BASE_REFS_PATH, BASE_REFS_TAGS_PATH, BASE_REFS_HEADS_PATH);
 
 }
