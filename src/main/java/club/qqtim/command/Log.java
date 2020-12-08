@@ -2,7 +2,7 @@ package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
 import club.qqtim.data.CommitObject;
-import lombok.Data;
+import club.qqtim.data.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -12,7 +12,8 @@ import picocli.CommandLine;
  * @Date: 2020/10/31
  * @Version 1.0.0
  */
-@Data
+
+@lombok.Data
 @Slf4j
 @CommandLine.Command(name = "log")
 public class Log implements Runnable{
@@ -24,7 +25,7 @@ public class Log implements Runnable{
     public void run() {
         // if no args, set HEAD
         // else use tag or hash as object id
-        String id = club.qqtim.data.Data.getId(this.id);
+        String id = Data.getId(this.id);
         while (id != null) {
             CommitObject commit = Commit.getCommit(id);
             log.info(String.format("%s %s\n", ConstantVal.COMMIT, id));

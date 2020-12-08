@@ -1,7 +1,7 @@
 package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
-import lombok.Data;
+import club.qqtim.data.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -11,7 +11,7 @@ import picocli.CommandLine;
  * @Date: 2020/11/7
  * @Version 1.0.0
  */
-@Data
+@lombok.Data
 @Slf4j
 @CommandLine.Command(name = "tag")
 public class Tag implements Runnable {
@@ -26,7 +26,7 @@ public class Tag implements Runnable {
 
     @Override
     public void run() {
-        String id = club.qqtim.data.Data.getId(this.id);
+        String id = Data.getId(this.id);
         if (id != null) {
             club.qqtim.data.Data.updateRef(String.format("refs/tags/%s", name), id);
         }
