@@ -1,9 +1,11 @@
 package club.qqtim.data;
 
+import club.qqtim.command.Commit;
 import club.qqtim.common.ConstantVal;
 import club.qqtim.common.RegexConstantVal;
 import club.qqtim.util.FileUtil;
 import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
 import com.google.common.io.CharSource;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,9 +15,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -34,15 +40,43 @@ public class Data {
         FileUtil.createFile(commitId.getBytes(), String.format("%s/%s", ZIT_DIR, ref));
     }
 
+
+    public static List<String> iteratorCommitsAndParents(Collection<String> ids) {
+        Set<String> idsSet = new HashSet<>(ids);
+        Set<String> visitedIds = new HashSet<>();
+        Set<String> resultSet = new HashSet<>(ids);
+
+        while (!idsSet.isEmpty()) {
+            // pop an element
+            final Optional<String> any = idsSet.stream().findAny();
+            final String id = any.get();
+            idsSet.remove(id);
+
+            // check if visited this element
+            if(visitedIds.contains(id)) {
+                continue;
+            }
+            // if not visited, then add it to result and check it's parent
+            visitedIds.add(id);
+            resultSet.add(id);
+            final CommitObject commit = Commit.getCommit(id);
+            if (Objects.nonNull(commit.getParent())) {
+                idsSet.add(commit.getParent());
+            }
+        }
+        return new ArrayList<>(resultSet);
+    }
+
+
     /**
-     * 返回当前环境下的所有 ref 对象
-     * @return HEAD 以及所有 refs 目录下的 refObject
+     * return all ref objects in the context
+     * @return HEAD and all ref objects in refs directory
      */
     public static List<RefObject> iteratorRefs() {
         List<String> refs = new ArrayList<>(1);
         refs.add(ConstantVal.HEAD);
 
-        //获取 refs/ 目录下所有文件的相对路径，生成 refs/* 的格式
+        //get all file relative path from refs/ , like refs/* format
         final Path refsPath = Paths.get(REFS_DIR_REAL);
         final Path refsDir = Paths.get(REFS_DIR);
         final List<String> pathList;
