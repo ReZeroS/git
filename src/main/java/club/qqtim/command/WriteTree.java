@@ -49,7 +49,7 @@ public class WriteTree implements Callable<String> {
 
         // only traverse the filter path
         final List<String> filterPathList = Arrays.stream(pathList)
-                .filter(club.qqtim.data.Data::isNotIgnored)
+                .filter(club.qqtim.context.Data::isNotIgnored)
                 .map(e -> String.format("%s/%s", dirPath, e)).collect(Collectors.toList());
 
         List<String> treeNodes = new ArrayList<>();

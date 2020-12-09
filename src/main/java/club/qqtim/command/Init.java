@@ -15,6 +15,6 @@ public class Init implements Runnable {
 
     @Override
     public void run() {
-        new club.qqtim.data.Data().init();
+        new club.qqtim.context.Data().init();
     }
 }

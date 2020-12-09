@@ -1,7 +1,7 @@
 package club.qqtim.command;
 
 import club.qqtim.data.CommitObject;
-import club.qqtim.data.Data;
+import club.qqtim.context.Data;
 import club.qqtim.data.RefObject;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;

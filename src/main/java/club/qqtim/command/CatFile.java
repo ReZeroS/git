@@ -23,8 +23,8 @@ public class CatFile implements Callable<String> {
 
     @Override
     public String call() {
-        String id = club.qqtim.data.Data.getId(this.id);
-        final String fileContent = new club.qqtim.data.Data().getObjectAsString(id, type);
+        String id = club.qqtim.context.Data.getId(this.id);
+        final String fileContent = new club.qqtim.context.Data().getObjectAsString(id, type);
         log.info(fileContent);
         return fileContent;
     }

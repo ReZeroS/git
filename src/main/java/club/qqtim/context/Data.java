@@ -1,11 +1,12 @@
-package club.qqtim.data;
+package club.qqtim.context;
 
 import club.qqtim.command.Commit;
 import club.qqtim.common.ConstantVal;
 import club.qqtim.common.RegexConstantVal;
+import club.qqtim.data.CommitObject;
+import club.qqtim.data.RefObject;
 import club.qqtim.util.FileUtil;
 import com.google.common.base.Charsets;
-import com.google.common.collect.Sets;
 import com.google.common.io.CharSource;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +18,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,16 +45,13 @@ public class Data {
 
 
     public static List<String> iteratorCommitsAndParents(Collection<String> ids) {
-        Set<String> idsSet = new HashSet<>(ids);
+        Deque<String> idsDeque = new LinkedList<>(ids);
         Set<String> visitedIds = new HashSet<>();
         Set<String> resultSet = new HashSet<>(ids);
 
-        while (!idsSet.isEmpty()) {
+        while (!idsDeque.isEmpty()) {
             // pop an element
-            final Optional<String> any = idsSet.stream().findAny();
-            final String id = any.get();
-            idsSet.remove(id);
-
+            final String id = idsDeque.pollFirst();
             // check if visited this element
             if(visitedIds.contains(id)) {
                 continue;
@@ -61,7 +61,7 @@ public class Data {
             resultSet.add(id);
             final CommitObject commit = Commit.getCommit(id);
             if (Objects.nonNull(commit.getParent())) {
-                idsSet.add(commit.getParent());
+                idsDeque.offerFirst(commit.getParent());
             }
         }
         return new ArrayList<>(resultSet);
@@ -183,7 +183,7 @@ public class Data {
     public static boolean isIgnored(String path) {
         return path != null &&
                 (
-                        path.startsWith(club.qqtim.data.Data.ZIT_DIR)
+                        path.startsWith(Data.ZIT_DIR)
                                 || path.startsWith(".zit")
                                 || path.startsWith("doc")
                                 || path.startsWith("target")

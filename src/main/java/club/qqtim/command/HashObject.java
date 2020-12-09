@@ -60,7 +60,7 @@ public class HashObject implements Callable<String> {
         String objectId = new BigInteger(1, digest).toString(16);
         log.info("objectId is {}", objectId);
         // create file with file name as object id
-        FileUtil.createFile(targetFileContents, club.qqtim.data.Data.OBJECTS_DIR + "/" + objectId);
+        FileUtil.createFile(targetFileContents, club.qqtim.context.Data.OBJECTS_DIR + "/" + objectId);
         return objectId;
     }
 
