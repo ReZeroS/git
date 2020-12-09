@@ -2,7 +2,7 @@ package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
 import club.qqtim.data.CommitObject;
-import club.qqtim.context.Data;
+import club.qqtim.context.ZitContext;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -28,8 +28,8 @@ public class Log implements Runnable{
     public void run() {
         // if no args, set HEAD
         // else use tag or hash as object id
-        final String id = Data.getId(Data.getId(this.id));
-        final List<String> idList = Data.iteratorCommitsAndParents(Collections.singletonList(id));
+        final String id = ZitContext.getId(ZitContext.getId(this.id));
+        final List<String> idList = ZitContext.iteratorCommitsAndParents(Collections.singletonList(id));
         idList.forEach(objectId -> {
             CommitObject commit = Commit.getCommit(objectId);
             log.info(String.format("%s %s\n", ConstantVal.COMMIT, objectId));

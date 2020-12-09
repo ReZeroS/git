@@ -1,6 +1,7 @@
 package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
+import club.qqtim.context.ZitContext;
 import club.qqtim.data.CommitObject;
 import com.google.common.base.Charsets;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class Commit implements Callable<String> {
     private String message;
 
     public static CommitObject getCommit(String id) {
-        final byte[] commit = new club.qqtim.context.Data().getObject(id, ConstantVal.COMMIT);
+        final byte[] commit = new ZitContext().getObject(id, ConstantVal.COMMIT);
         final String commitContent = new String(commit, Charsets.UTF_8);
         final String[] lines = commitContent.split(ConstantVal.NEW_LINE);
 
@@ -51,7 +52,7 @@ public class Commit implements Callable<String> {
         writeTree.setPath(ConstantVal.BASE_PATH);
         String commitMessage = String.format("%s %s\n", ConstantVal.TREE, writeTree.call());
 
-        String headId = club.qqtim.context.Data.getRef(ConstantVal.HEAD);
+        String headId = ZitContext.getRef(ConstantVal.HEAD);
         if (headId != null) {
             commitMessage += String.format("%s %s\n", ConstantVal.PARENT, headId);
         }
@@ -60,7 +61,7 @@ public class Commit implements Callable<String> {
 
         HashObject hashObject = new HashObject();
         final String commitId = hashObject.hashObject(commitMessage.getBytes(), ConstantVal.COMMIT);
-        club.qqtim.context.Data.updateRef(ConstantVal.HEAD, commitId);
+        ZitContext.updateRef(ConstantVal.HEAD, commitId);
         return commitId;
     }
 }

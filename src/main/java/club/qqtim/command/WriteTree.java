@@ -1,6 +1,7 @@
 package club.qqtim.command;
 
 
+import club.qqtim.context.ZitContext;
 import com.google.common.base.Joiner;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ public class WriteTree implements Callable<String> {
 
         // only traverse the filter path
         final List<String> filterPathList = Arrays.stream(pathList)
-                .filter(club.qqtim.context.Data::isNotIgnored)
+                .filter(ZitContext::isNotIgnored)
                 .map(e -> String.format("%s/%s", dirPath, e)).collect(Collectors.toList());
 
         List<String> treeNodes = new ArrayList<>();

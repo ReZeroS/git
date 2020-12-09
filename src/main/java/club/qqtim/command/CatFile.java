@@ -1,6 +1,7 @@
 package club.qqtim.command;
 
 
+import club.qqtim.context.ZitContext;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -23,8 +24,8 @@ public class CatFile implements Callable<String> {
 
     @Override
     public String call() {
-        String id = club.qqtim.context.Data.getId(this.id);
-        final String fileContent = new club.qqtim.context.Data().getObjectAsString(id, type);
+        String id = ZitContext.getId(this.id);
+        final String fileContent = new ZitContext().getObjectAsString(id, type);
         log.info(fileContent);
         return fileContent;
     }

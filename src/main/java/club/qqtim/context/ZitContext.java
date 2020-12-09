@@ -23,13 +23,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 
 @Slf4j
-public class Data {
+public class ZitContext {
 
     public static final String ZIT_DIR = ".zit";
 
@@ -99,6 +98,11 @@ public class Data {
         }).collect(Collectors.toList());
     }
 
+    /**
+     * todo dereference it recursively for content   ref: <refname>
+     * @param ref ref
+     * @return real ref
+     */
     public static String getRef(String ref) {
         File file = new File(String.format("%s/%s", ZIT_DIR, ref));
         try {
@@ -119,7 +123,7 @@ public class Data {
             refOrId = ConstantVal.HEAD;
         }
         for (String path : ConstantVal.REF_REGISTRY_DIRECTORIES) {
-            final String ref = Data.getRef(String.format(path, refOrId));
+            final String ref = ZitContext.getRef(String.format(path, refOrId));
             if (Objects.nonNull(ref)) {
                 return ref;
             }
@@ -183,7 +187,7 @@ public class Data {
     public static boolean isIgnored(String path) {
         return path != null &&
                 (
-                        path.startsWith(Data.ZIT_DIR)
+                        path.startsWith(ZitContext.ZIT_DIR)
                                 || path.startsWith(".zit")
                                 || path.startsWith("doc")
                                 || path.startsWith("target")

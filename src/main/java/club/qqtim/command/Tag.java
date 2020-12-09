@@ -1,7 +1,7 @@
 package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
-import club.qqtim.context.Data;
+import club.qqtim.context.ZitContext;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -26,9 +26,9 @@ public class Tag implements Runnable {
 
     @Override
     public void run() {
-        String id = Data.getId(this.id);
+        String id = ZitContext.getId(this.id);
         if (id != null) {
-            Data.updateRef(String.format("refs/tags/%s", name), id);
+            ZitContext.updateRef(String.format("refs/tags/%s", name), id);
         }
     }
 }

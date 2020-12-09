@@ -1,5 +1,6 @@
 package club.qqtim.command;
 
+import club.qqtim.context.ZitContext;
 import lombok.Data;
 import picocli.CommandLine;
 
@@ -15,6 +16,6 @@ public class Init implements Runnable {
 
     @Override
     public void run() {
-        new club.qqtim.context.Data().init();
+        new ZitContext().init();
     }
 }

@@ -1,7 +1,7 @@
 package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
-import club.qqtim.context.Data;
+import club.qqtim.context.ZitContext;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -33,6 +33,6 @@ public class Branch implements Runnable{
     }
 
     private static void createBranch(String name, String startPoint) {
-        Data.updateRef(String.format("refs/heads/%s", name), startPoint);
+        ZitContext.updateRef(String.format("refs/heads/%s", name), startPoint);
     }
 }
