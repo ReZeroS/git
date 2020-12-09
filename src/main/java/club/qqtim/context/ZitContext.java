@@ -52,7 +52,7 @@ public class ZitContext {
             // pop an element
             final String id = idsDeque.pollFirst();
             // check if visited this element
-            if(visitedIds.contains(id)) {
+            if (visitedIds.contains(id)) {
                 continue;
             }
             // if not visited, then add it to result and check it's parent
@@ -69,6 +69,7 @@ public class ZitContext {
 
     /**
      * return all ref objects in the context
+     *
      * @return HEAD and all ref objects in refs directory
      */
     public static List<RefObject> iteratorRefs() {
@@ -100,18 +101,23 @@ public class ZitContext {
 
     /**
      * todo dereference it recursively for content   ref: <refname>
+     *
      * @param ref ref
      * @return real ref
      */
     public static String getRef(String ref) {
+        String value = null;
         File file = new File(String.format("%s/%s", ZIT_DIR, ref));
         try {
             final CharSource charSource = com.google.common.io.Files.asCharSource(file, Charsets.UTF_8);
-            return Objects.requireNonNull(charSource.readFirstLine()).trim();
+            value = Objects.requireNonNull(charSource.readFirstLine()).trim();
         } catch (IOException e) {
             log.error(e.getMessage());
         }
-        return null;
+        if (value != null && value.startsWith("ref:")) {
+            return getRef(value.split(":", 1)[1].trim());
+        }
+        return value;
     }
 
     /**
@@ -134,7 +140,7 @@ public class ZitContext {
         return null;
     }
 
-    public void init(){
+    public void init() {
         initRoot();
         initObjects();
     }
@@ -180,6 +186,7 @@ public class ZitContext {
     public static boolean isNotIgnored(String path) {
         return !isIgnored(path);
     }
+
     /**
      * @param path file path
      * @return whether it's zit meta file
