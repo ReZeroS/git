@@ -17,6 +17,7 @@ import java.util.concurrent.Callable;
  * @Author lijie78
  * @Date: 2020/12/7
  * @Version 1.0.0
+ * https://www.leshenko.net/p/ugit/#k-render-graph
  */
 @Slf4j
 @lombok.Data
@@ -26,20 +27,30 @@ public class Lg implements Callable<String> {
 
     @Override
     public String call() {
+        StringBuilder dotGraph = new StringBuilder("digraph commits {\n");
+
+
         Set<String> idsSet = new HashSet<>();
         final List<RefObject> refObjects = Data.iteratorRefs();
-        refObjects.forEach(refObject -> {
-            log.debug(refObject.toString());
+        for (RefObject refObject : refObjects) {
+            dotGraph.append(String.format("\"{%s}\" [shape=note]\n", refObject.getRefName()));
+            dotGraph.append(String.format("\"{%s}\" -> \"{%s}\"\n", refObject.getRefName(), refObject.getRef()));
             idsSet.add(refObject.getRef());
-        });
+        }
         final List<String> refIds = Data.iteratorCommitsAndParents(idsSet);
         refIds.forEach(refId -> {
             final CommitObject commit = Commit.getCommit(refId);
-            log.info(refId);
+            final String shapeBox = String.format("\"{%s}\" [shape=box style=filled label=\"{%s}\"]\n", refId, refId.substring(0, 11));
+            dotGraph.append(shapeBox);
             if (Objects.nonNull(commit.getParent())) {
-                log.info("Parent: {}", commit.getParent());
+                final String parent = String.format("\"{%s}\" -> \"{%s}\"\n", refId, commit.getParent());
+                dotGraph.append(parent);
             }
         });
+        dotGraph.append("}");
+        log.info(dotGraph.toString());
+
+        //todo: output rendered image to the screen
         return null;
     }
 }

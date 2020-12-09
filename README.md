@@ -1,5 +1,11 @@
 # ZIT development log
 
+## Summary
+
+原作者地址: [https://www.leshenko.net/p/ugit](https://www.leshenko.net/p/ugit)
+
+对 `git` 挺感兴趣，就照着实现了一个java版本的，多谢作者大佬写出这样的文章系列能让我们小白也体验一把。
+
 ## TODO
 
 1. git hash-object todo. When real Git stores objects it does a few extra things, such as writing the size of the object to the file as well, compressing them and dividing the objects into 256 directories. This is done to avoid having directories with huge number of files, which can hurt performance.
@@ -27,3 +33,4 @@
     - `root` 所指的是当前正在遍历的这个文件夹的本身的地址
     - `dirs` 是一个 list ，内容是该文件夹中所有的目录的名字(不包括子目录)
     - `files` 同样是 list , 内容是该文件夹中所有的文件(不包括子目录)
+    - Java nio 包的 `Files` class 也同样提供了类似的功能 
