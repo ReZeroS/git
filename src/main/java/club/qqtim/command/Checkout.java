@@ -3,6 +3,7 @@ package club.qqtim.command;
 import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
 import club.qqtim.data.CommitObject;
+import club.qqtim.data.RefValue;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -33,7 +34,7 @@ public class Checkout implements Runnable {
         final CommitObject commit = Commit.getCommit(id);
         final ReadTree readTree = new ReadTree();
         readTree.readTree(commit.getTree());
-        ZitContext.updateRef(ConstantVal.HEAD, id);
+        ZitContext.updateRef(ConstantVal.HEAD, new RefValue(false, id));
     }
 
 }

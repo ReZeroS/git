@@ -34,8 +34,8 @@ public class Lg implements Callable<String> {
         final List<RefObject> refObjects = ZitContext.iteratorRefs();
         for (RefObject refObject : refObjects) {
             dotGraph.append(String.format("\"{%s}\" [shape=note]\n", refObject.getRefName()));
-            dotGraph.append(String.format("\"{%s}\" -> \"{%s}\"\n", refObject.getRefName(), refObject.getRef()));
-            idsSet.add(refObject.getRef());
+            dotGraph.append(String.format("\"{%s}\" -> \"{%s}\"\n", refObject.getRefName(), refObject.getRef().getValue()));
+            idsSet.add(refObject.getRef().getValue());
         }
         final List<String> refIds = ZitContext.iteratorCommitsAndParents(idsSet);
         refIds.forEach(refId -> {

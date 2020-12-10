@@ -3,6 +3,7 @@ package club.qqtim.command;
 import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
 import club.qqtim.data.CommitObject;
+import club.qqtim.data.RefValue;
 import com.google.common.base.Charsets;
 import lombok.Data;
 import picocli.CommandLine;
@@ -52,7 +53,7 @@ public class Commit implements Callable<String> {
         writeTree.setPath(ConstantVal.BASE_PATH);
         String commitMessage = String.format("%s %s\n", ConstantVal.TREE, writeTree.call());
 
-        String headId = ZitContext.getRef(ConstantVal.HEAD);
+        String headId = ZitContext.getRef(ConstantVal.HEAD).getValue();
         if (headId != null) {
             commitMessage += String.format("%s %s\n", ConstantVal.PARENT, headId);
         }
@@ -61,7 +62,7 @@ public class Commit implements Callable<String> {
 
         HashObject hashObject = new HashObject();
         final String commitId = hashObject.hashObject(commitMessage.getBytes(), ConstantVal.COMMIT);
-        ZitContext.updateRef(ConstantVal.HEAD, commitId);
+        ZitContext.updateRef(ConstantVal.HEAD, new RefValue(false, commitId));
         return commitId;
     }
 }

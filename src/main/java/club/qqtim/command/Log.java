@@ -28,7 +28,7 @@ public class Log implements Runnable{
     public void run() {
         // if no args, set HEAD
         // else use tag or hash as object id
-        final String id = ZitContext.getId(ZitContext.getId(this.id));
+        final String id = ZitContext.getId(this.id);
         final List<String> idList = ZitContext.iteratorCommitsAndParents(Collections.singletonList(id));
         idList.forEach(objectId -> {
             CommitObject commit = Commit.getCommit(objectId);

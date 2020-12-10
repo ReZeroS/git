@@ -6,19 +6,21 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
- * @title: RefObject
+ * @title: RefValue
  * @Author lijie78
- * @Date: 2020/12/8
+ * @Date: 2020/12/10
  * @Version 1.0.0
  */
 @Data
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefObject {
+public class RefValue {
 
-    private String refName;
+    /**
+     * whether it's a symbolic or a direct ref.
+     */
+    private Boolean symbolic;
 
-    private RefValue ref;
-
+    private String value;
 }

@@ -5,6 +5,7 @@ import club.qqtim.common.ConstantVal;
 import club.qqtim.common.RegexConstantVal;
 import club.qqtim.data.CommitObject;
 import club.qqtim.data.RefObject;
+import club.qqtim.data.RefValue;
 import club.qqtim.util.FileUtil;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharSource;
@@ -38,9 +39,7 @@ public class ZitContext {
     public static final String REFS_DIR_REAL = ZIT_DIR + "/" + REFS_DIR;
 
 
-    public static void updateRef(String ref, String commitId) {
-        FileUtil.createFile(commitId.getBytes(), String.format("%s/%s", ZIT_DIR, ref));
-    }
+
 
 
     public static List<String> iteratorCommitsAndParents(Collection<String> ids) {
@@ -91,7 +90,7 @@ public class ZitContext {
         refs.addAll(pathList);
 
         return refs.stream().map(refName -> {
-            final String ref = getRef(refName);
+            final RefValue ref = getRef(refName);
             final RefObject refObject = new RefObject();
             refObject.setRefName(refName);
             refObject.setRef(ref);
@@ -105,7 +104,7 @@ public class ZitContext {
      * @param ref ref
      * @return real ref
      */
-    public static String getRef(String ref) {
+    public static RefValue getRef(String ref) {
         String value = null;
         File file = new File(String.format("%s/%s", ZIT_DIR, ref));
         try {
@@ -117,7 +116,11 @@ public class ZitContext {
         if (value != null && value.startsWith("ref:")) {
             return getRef(value.split(":", 1)[1].trim());
         }
-        return value;
+        return new RefValue(false, value);
+    }
+
+    public static void updateRef(String ref, RefValue refValue) {
+        FileUtil.createFile(refValue.getValue().getBytes(), String.format("%s/%s", ZIT_DIR, ref));
     }
 
     /**
@@ -129,10 +132,8 @@ public class ZitContext {
             refOrId = ConstantVal.HEAD;
         }
         for (String path : ConstantVal.REF_REGISTRY_DIRECTORIES) {
-            final String ref = ZitContext.getRef(String.format(path, refOrId));
-            if (Objects.nonNull(ref)) {
-                return ref;
-            }
+            final RefValue ref = ZitContext.getRef(String.format(path, refOrId));
+            return ref.getValue();
         }
         if (RegexConstantVal.ALL_HEX.matcher(refOrId).find()) {
             return refOrId;
