@@ -93,18 +93,22 @@ public class ZitContext {
             final RefValue ref = getRef(refName);
             final RefObject refObject = new RefObject();
             refObject.setRefName(refName);
-            refObject.setRef(ref);
+            refObject.setRefValue(ref);
             return refObject;
         }).collect(Collectors.toList());
     }
 
     /**
-     * todo dereference it recursively for content   ref: <refname>
+     * dereference it recursively for content   ref: <refname>
      *
      * @param ref ref
      * @return real ref
      */
     public static RefValue getRef(String ref) {
+        return getRefInternal(ref).getRefValue();
+    }
+
+    private static RefObject getRefInternal(String ref) {
         String value = null;
         File file = new File(String.format("%s/%s", ZIT_DIR, ref));
         try {
@@ -113,10 +117,12 @@ public class ZitContext {
         } catch (IOException e) {
             log.error(e.getMessage());
         }
-        if (value != null && value.startsWith("ref:")) {
-            return getRef(value.split(":", 1)[1].trim());
+        boolean symbolic = (value != null && value.startsWith("ref:"));
+        if (symbolic){
+            value = value.split(":", 1)[1].trim();
+            return getRefInternal(value);
         }
-        return new RefValue(false, value);
+        return new RefObject(ref, new RefValue(false, value));
     }
 
     public static void updateRef(String ref, RefValue refValue) {

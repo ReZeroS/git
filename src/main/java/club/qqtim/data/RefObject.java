@@ -19,6 +19,6 @@ public class RefObject {
 
     private String refName;
 
-    private RefValue ref;
+    private RefValue refValue;
 
 }
