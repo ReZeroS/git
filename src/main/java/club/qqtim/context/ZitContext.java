@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -150,9 +151,14 @@ public class ZitContext {
     }
 
     public static void updateRef(String ref, RefValue refValue, boolean dereference) {
-        final byte[] fileContent = refValue.getValue().getBytes();
         final String refName = getRefInternal(ref, dereference).getRefName();
-        FileUtil.createFile(fileContent, String.format("%s/%s", ZIT_DIR, refName));
+        String value;
+        if (refValue.getSymbolic()) {
+            value = String.format("ref: {%s}", refValue.getValue());
+        } else {
+            value = refValue.getValue();
+        }
+        FileUtil.createFile(value.getBytes(Charsets.UTF_8), String.format("%s/%s", ZIT_DIR, refName));
     }
 
     /**

@@ -62,7 +62,7 @@ public class Commit implements Callable<String> {
         commitMessage += String.format("\n%s\n", message);
 
         HashObject hashObject = new HashObject();
-        final String commitId = hashObject.hashObject(commitMessage.getBytes(), ConstantVal.COMMIT);
+        final String commitId = hashObject.hashObject(commitMessage.getBytes(Charsets.UTF_8), ConstantVal.COMMIT);
         ZitContext.updateRef(ConstantVal.HEAD, new RefValue(false, commitId));
         return commitId;
     }

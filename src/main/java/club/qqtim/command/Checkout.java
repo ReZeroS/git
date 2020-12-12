@@ -32,7 +32,7 @@ public class Checkout implements Runnable {
 
 
     /**
-     * todo bugfix: chinese file or dir name got messy code
+     * checkout command generate module by the commit describe
      * @param id commit id
      */
     private void checkout(String id) {

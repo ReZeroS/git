@@ -66,7 +66,7 @@
 
 8. Now we get the first point: `checkout`. Pick a commit id from the `log` and checkout whether things as expected.
 
-   - find bug todo: chinese file or dir name got messy code
+   - [fixed with getBytes(Charsets.UTF-8)] find bug todo: chinese file or dir name got messy code
    
 9. `tag` will alias commit id, and at this time, you will get first inner core concept.
    

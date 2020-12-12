@@ -2,6 +2,7 @@ package club.qqtim.command;
 
 
 import club.qqtim.context.ZitContext;
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +85,7 @@ public class WriteTree implements Callable<String> {
         // file with content: every object in one line
         final String fileContent = Joiner.on("").join(treeNodes);
         // return tree id
-        return hashObject.hashObject(fileContent.getBytes(), "tree");
+        return hashObject.hashObject(fileContent.getBytes(Charsets.UTF_8), "tree");
     }
 
 

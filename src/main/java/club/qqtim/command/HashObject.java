@@ -3,6 +3,7 @@ package club.qqtim.command;
 import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
 import club.qqtim.util.FileUtil;
+import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Chars;
@@ -49,7 +50,7 @@ public class HashObject implements Callable<String> {
 
     protected String hashObject(byte[] fileContents, String type) {
         char nullChar = 0;
-        byte[] targetFileContents = Bytes.concat(type.getBytes(), Chars.toByteArray(nullChar), fileContents);
+        byte[] targetFileContents = Bytes.concat(type.getBytes(Charsets.UTF_8), Chars.toByteArray(nullChar), fileContents);
         byte[] digest = new byte[0];
         try {
             digest = MessageDigest.getInstance(ConstantVal.HASH_ALGORITHM).digest(targetFileContents);

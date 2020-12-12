@@ -102,7 +102,7 @@ public final class FileUtil {
         }
         // todo: refactor the below code to extract a method like obj.partition in python
         byte[] fileWithHeader = byteSource.read();
-        byte[] header = new byte[type.getBytes().length];
+        byte[] header = new byte[type.getBytes(Charsets.UTF_8).length];
         byte[] nullBytes = new byte[Chars.toByteArray(nullChar).length];
         byte[] fileContent = new byte[fileWithHeader.length - header.length - nullBytes.length];
         ByteBuffer fileWithHeaderBuffer = ByteBuffer.wrap(fileWithHeader);
