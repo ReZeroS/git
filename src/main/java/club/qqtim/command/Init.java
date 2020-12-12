@@ -1,6 +1,8 @@
 package club.qqtim.command;
 
+import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
+import club.qqtim.data.RefValue;
 import lombok.Data;
 import picocli.CommandLine;
 
@@ -16,6 +18,8 @@ public class Init implements Runnable {
 
     @Override
     public void run() {
-        new ZitContext().init();
+        ZitContext.init();
+        final RefValue refValue = new RefValue(true, String.format(ConstantVal.BASE_REFS_HEADS_PATH, ConstantVal.DEFAULT_BRANCH));
+        ZitContext.updateRef(ConstantVal.HEAD, refValue);
     }
 }

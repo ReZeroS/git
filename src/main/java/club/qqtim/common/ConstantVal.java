@@ -49,4 +49,9 @@ public final class ConstantVal {
     public static final List<String> REF_REGISTRY_DIRECTORIES =
             Arrays.asList(BASE_FORMAT, BASE_REFS_PATH, BASE_REFS_TAGS_PATH, BASE_REFS_HEADS_PATH);
 
+
+    // default value
+
+    public static final String DEFAULT_BRANCH = "main";
+
 }

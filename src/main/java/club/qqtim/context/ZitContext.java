@@ -181,16 +181,16 @@ public class ZitContext {
         return null;
     }
 
-    public void init() {
+    public static void init() {
         initRoot();
         initObjects();
     }
 
-    private void initRoot() {
+    private static void initRoot() {
         FileUtil.mkdir(ZIT_DIR);
     }
 
-    private void initObjects() {
+    private static void initObjects() {
         FileUtil.mkdir(OBJECTS_DIR);
     }
 
