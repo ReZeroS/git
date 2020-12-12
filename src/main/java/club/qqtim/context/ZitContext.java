@@ -138,7 +138,7 @@ public class ZitContext {
         }
         boolean symbolic = (value != null && value.startsWith("ref:"));
         if (symbolic){
-            value = value.split(":", 1)[1].trim();
+            value = value.split(":", 2)[1].trim();
             if (dereference) {
                 return getRefInternal(value);
             }
@@ -154,7 +154,7 @@ public class ZitContext {
         final String refName = getRefInternal(ref, dereference).getRefName();
         String value;
         if (refValue.getSymbolic()) {
-            value = String.format("ref: {%s}", refValue.getValue());
+            value = String.format("ref: %s", refValue.getValue());
         } else {
             value = refValue.getValue();
         }
@@ -177,6 +177,18 @@ public class ZitContext {
         }
         if (RegexConstantVal.ALL_HEX.matcher(refOrId).find()) {
             return refOrId;
+        }
+        return null;
+    }
+
+    public static String getBranchName(){
+        final RefValue head = getRef(ConstantVal.HEAD, false);
+        if (!head.getSymbolic()) {
+            return null;
+        }
+        final String headPath = head.getValue();
+        if (headPath.startsWith("refs/heads")) {
+            return Paths.get("refs/heads").relativize(Paths.get(headPath)).toString();
         }
         return null;
     }

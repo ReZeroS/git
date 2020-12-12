@@ -17,7 +17,8 @@ import picocli.CommandLine;
         Checkout.class,
         Tag.class,
         Lg.class,
-        Branch.class
+        Branch.class,
+        Status.class
 })
 public class Zit {
 }
