@@ -7,6 +7,8 @@ import club.qqtim.data.RefValue;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
+import java.nio.file.Path;
+
 /**
  * @title: Checkout
  * @Author lijie78
@@ -20,26 +22,32 @@ public class Checkout implements Runnable {
 
 
     @CommandLine.Parameters(index = "0")
-    private String id;
+    private String commit;
 
 
 
     @Override
     public void run() {
-        String id = ZitContext.getId(this.id);
-        checkout(id);
+        checkout(this.commit);
     }
 
 
     /**
      * checkout command generate module by the commit describe
-     * @param id commit id
+     * @param name any thing can checkout
      */
-    private void checkout(String id) {
+    private void checkout(String name) {
+        String id = ZitContext.getId(name);
         final CommitObject commit = Commit.getCommit(id);
         final ReadTree readTree = new ReadTree();
         readTree.readTree(commit.getTree());
-        ZitContext.updateRef(ConstantVal.HEAD, new RefValue(false, id));
+        RefValue refValue;
+        if (Branch.existBranch(name)) {
+            refValue = new RefValue(true, String.format(ConstantVal.BASE_REFS_HEADS_PATH, name));
+        } else {
+            refValue = new RefValue(false, id);
+        }
+        ZitContext.updateRef(ConstantVal.HEAD, refValue,false);
     }
 
 }

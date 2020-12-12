@@ -75,5 +75,7 @@
 10. todo: `zit lg` graph feature with Graphviz
 
 11. `zit branch name [id]` so familiar.
-
+   
+   - every ref under refs/heads as a branch.
+     
 12. 
