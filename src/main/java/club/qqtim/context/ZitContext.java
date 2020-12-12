@@ -72,6 +72,14 @@ public class ZitContext {
      * @return HEAD and all ref objects in refs directory
      */
     public static List<RefObject> iteratorRefs() {
+        return iteratorRefs(true);
+    }
+    /**
+     * return all ref objects in the context
+     *
+     * @return HEAD and all ref objects in refs directory
+     */
+    public static List<RefObject> iteratorRefs(boolean dereference) {
         List<String> refs = new ArrayList<>(1);
         refs.add(ConstantVal.HEAD);
 
@@ -90,7 +98,7 @@ public class ZitContext {
         refs.addAll(pathList);
 
         return refs.stream().map(refName -> {
-            final RefValue ref = getRef(refName);
+            final RefValue ref = getRef(refName, dereference);
             final RefObject refObject = new RefObject();
             refObject.setRefName(refName);
             refObject.setRefValue(ref);
@@ -98,17 +106,25 @@ public class ZitContext {
         }).collect(Collectors.toList());
     }
 
-    /**
+
+    public static RefValue getRef(String ref) {
+        return getRef(ref, true);
+    }
+/**
      * dereference it recursively for content   ref: <refname>
      *
      * @param ref ref
      * @return real ref
      */
-    public static RefValue getRef(String ref) {
-        return getRefInternal(ref).getRefValue();
+    public static RefValue getRef(String ref, boolean dereference) {
+        return getRefInternal(ref, dereference).getRefValue();
     }
 
     private static RefObject getRefInternal(String ref) {
+        return getRefInternal(ref, true);
+    }
+
+    private static RefObject getRefInternal(String ref, boolean dereference) {
         String value = null;
         File file = new File(String.format("%s/%s", ZIT_DIR, ref));
         if (file.exists()) {
@@ -122,13 +138,21 @@ public class ZitContext {
         boolean symbolic = (value != null && value.startsWith("ref:"));
         if (symbolic){
             value = value.split(":", 1)[1].trim();
-            return getRefInternal(value);
+            if (dereference) {
+                return getRefInternal(value);
+            }
         }
-        return new RefObject(ref, new RefValue(false, value));
+        return new RefObject(ref, new RefValue(symbolic, value));
     }
 
     public static void updateRef(String ref, RefValue refValue) {
-        FileUtil.createFile(refValue.getValue().getBytes(), String.format("%s/%s", ZIT_DIR, ref));
+        updateRef(ref, refValue, true);
+    }
+
+    public static void updateRef(String ref, RefValue refValue, boolean dereference) {
+        final byte[] fileContent = refValue.getValue().getBytes();
+        final String refName = getRefInternal(ref, dereference).getRefName();
+        FileUtil.createFile(fileContent, String.format("%s/%s", ZIT_DIR, refName));
     }
 
     /**
@@ -140,7 +164,7 @@ public class ZitContext {
             refOrId = ConstantVal.HEAD;
         }
         for (String path : ConstantVal.REF_REGISTRY_DIRECTORIES) {
-            final RefValue ref = ZitContext.getRef(String.format(path, refOrId));
+            final RefValue ref = ZitContext.getRef(String.format(path, refOrId), false);
             if (Objects.nonNull(ref.getValue())) {
                 return ref.getValue();
             }

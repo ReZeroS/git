@@ -74,4 +74,6 @@
 
 10. todo: `zit lg` graph feature with Graphviz
 
-11. `zit branch `
+11. `zit branch name [id]` so familiar.
+
+12. 

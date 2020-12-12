@@ -3,6 +3,7 @@ package club.qqtim.command;
 import club.qqtim.context.ZitContext;
 import club.qqtim.data.CommitObject;
 import club.qqtim.data.RefObject;
+import club.qqtim.data.RefValue;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -31,11 +32,14 @@ public class Lg implements Callable<String> {
 
 
         Set<String> idsSet = new HashSet<>();
-        final List<RefObject> refObjects = ZitContext.iteratorRefs();
+        final List<RefObject> refObjects = ZitContext.iteratorRefs(false);
         for (RefObject refObject : refObjects) {
             dotGraph.append(String.format("\"{%s}\" [shape=note]\n", refObject.getRefName()));
-            dotGraph.append(String.format("\"{%s}\" -> \"{%s}\"\n", refObject.getRefName(), refObject.getRefValue().getValue()));
-            idsSet.add(refObject.getRefValue().getValue());
+            final RefValue refValue = refObject.getRefValue();
+            dotGraph.append(String.format("\"{%s}\" -> \"{%s}\"\n", refObject.getRefName(), refValue.getValue()));
+            if (!refValue.getSymbolic()) {
+                idsSet.add(refObject.getRefValue().getValue());
+            }
         }
         final List<String> refIds = ZitContext.iteratorCommitsAndParents(idsSet);
         refIds.forEach(refId -> {
