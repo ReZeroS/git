@@ -25,7 +25,7 @@ public class CatFile implements Callable<String> {
     @Override
     public String call() {
         String id = ZitContext.getId(this.id);
-        final String fileContent = new ZitContext().getObjectAsString(id, type);
+        final String fileContent = ZitContext.getObjectAsString(id, type);
         log.info(fileContent);
         return fileContent;
     }

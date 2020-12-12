@@ -59,7 +59,7 @@ public class HashObject implements Callable<String> {
 
         // convert digest bytes to hex string
         String objectId = new BigInteger(1, digest).toString(16);
-        log.info("objectId is {}", objectId);
+        log.info("objectId with {} type is {}", type, objectId);
         // create file with file name as object id
         FileUtil.createFile(targetFileContents, ZitContext.OBJECTS_DIR + "/" + objectId);
         return objectId;

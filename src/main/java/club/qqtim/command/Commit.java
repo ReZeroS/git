@@ -28,7 +28,8 @@ public class Commit implements Callable<String> {
     private String message;
 
     public static CommitObject getCommit(String id) {
-        final byte[] commit = new ZitContext().getObject(id, ConstantVal.COMMIT);
+        final byte[] commit = ZitContext.getObject(id, ConstantVal.COMMIT);
+        assert commit != null;
         final String commitContent = new String(commit, Charsets.UTF_8);
         final String[] lines = commitContent.split(ConstantVal.NEW_LINE);
 

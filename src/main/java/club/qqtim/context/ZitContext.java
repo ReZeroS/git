@@ -111,11 +111,13 @@ public class ZitContext {
     private static RefObject getRefInternal(String ref) {
         String value = null;
         File file = new File(String.format("%s/%s", ZIT_DIR, ref));
-        try {
-            final CharSource charSource = com.google.common.io.Files.asCharSource(file, Charsets.UTF_8);
-            value = Objects.requireNonNull(charSource.readFirstLine()).trim();
-        } catch (IOException e) {
-            log.error(e.getMessage());
+        if (file.exists()) {
+            try {
+                final CharSource charSource = com.google.common.io.Files.asCharSource(file, Charsets.UTF_8);
+                value = Objects.requireNonNull(charSource.readFirstLine()).trim();
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            }
         }
         boolean symbolic = (value != null && value.startsWith("ref:"));
         if (symbolic){
@@ -139,7 +141,9 @@ public class ZitContext {
         }
         for (String path : ConstantVal.REF_REGISTRY_DIRECTORIES) {
             final RefValue ref = ZitContext.getRef(String.format(path, refOrId));
-            return ref.getValue();
+            if (Objects.nonNull(ref.getValue())) {
+                return ref.getValue();
+            }
         }
         if (RegexConstantVal.ALL_HEX.matcher(refOrId).find()) {
             return refOrId;
@@ -164,7 +168,7 @@ public class ZitContext {
         return getObject(hash, ConstantVal.BLOB);
     }
 
-    public byte[] getObject(String hash, String type) {
+    public static byte[] getObject(String hash, String type) {
         String path = OBJECTS_DIR + "/" + hash;
         log.info("get the content of {} file", path);
         try {
@@ -175,7 +179,7 @@ public class ZitContext {
         return null;
     }
 
-    public String getObjectAsString(String hash, String type) {
+    public static String getObjectAsString(String hash, String type) {
         String path = OBJECTS_DIR + "/" + hash;
         log.info("get the content of {} file", path);
         try {

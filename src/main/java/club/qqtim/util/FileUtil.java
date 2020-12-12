@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -27,7 +28,7 @@ public final class FileUtil {
     public static void mkdir(String dirName) {
         boolean mkdir = new File(dirName).mkdir();
         if (mkdir) {
-            log.info("Init empty .zit repository in {}{}{}", FileUtil.getCurrentDir(), "\\", dirName);
+            log.info("Init {} directory in .zit repository", Paths.get(Objects.requireNonNull(FileUtil.getCurrentDir()), dirName));
         } else {
             log.info("Create directory failed, please check your access right.");
         }
@@ -106,6 +107,7 @@ public final class FileUtil {
         byte[] fileContent = new byte[fileWithHeader.length - header.length - nullBytes.length];
         ByteBuffer fileWithHeaderBuffer = ByteBuffer.wrap(fileWithHeader);
         fileWithHeaderBuffer.get(header, 0, header.length);
+        log.debug("current object type is {}:", new String(header, Charsets.UTF_8));
         fileWithHeaderBuffer.get(nullBytes, 0, nullBytes.length);
         fileWithHeaderBuffer.get(fileContent, 0, fileContent.length);
         return ByteSource.wrap(fileContent);

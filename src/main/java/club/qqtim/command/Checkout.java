@@ -30,6 +30,11 @@ public class Checkout implements Runnable {
         checkout(id);
     }
 
+
+    /**
+     * todo bugfix: chinese file or dir name got messy code
+     * @param id commit id
+     */
     private void checkout(String id) {
         final CommitObject commit = Commit.getCommit(id);
         final ReadTree readTree = new ReadTree();
