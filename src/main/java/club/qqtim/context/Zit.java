@@ -11,6 +11,7 @@ import club.qqtim.command.Lg;
 import club.qqtim.command.Log;
 import club.qqtim.command.ReadTree;
 import club.qqtim.command.Reset;
+import club.qqtim.command.Show;
 import club.qqtim.command.Status;
 import club.qqtim.command.Tag;
 import club.qqtim.command.WriteTree;
@@ -32,7 +33,8 @@ import picocli.CommandLine;
         Lg.class,
         Branch.class,
         Status.class,
-        Reset.class
+        Reset.class,
+        Show.class
 })
 public class Zit {
 }

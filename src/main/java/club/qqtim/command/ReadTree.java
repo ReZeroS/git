@@ -11,9 +11,11 @@ import picocli.CommandLine;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +39,7 @@ public class ReadTree implements Runnable {
     }
 
 
-    private List<ZitObject> iteratorTree(String treeId) {
+    private static List<ZitObject> iteratorTree(String treeId) {
         final String tree = ZitContext.getObjectAsString(treeId, "tree");
         return Arrays.stream(tree.split(ConstantVal.NEW_LINE))
                 .map(object -> object.split(ConstantVal.SINGLE_SPACE))
@@ -45,7 +47,14 @@ public class ReadTree implements Runnable {
                 .collect(Collectors.toList());
     }
 
-    private Map<String, String> getTree(String treeId, String basePath) {
+    public static Map<String, String> getTree(String treeId) {
+        return getTree(treeId, ConstantVal.EMPTY);
+    }
+
+    private static Map<String, String> getTree(String treeId, String basePath) {
+        if (Objects.isNull(treeId)) {
+            return Collections.emptyMap();
+        }
         final List<ZitObject> zitObjects = iteratorTree(treeId);
         Map<String, String> map = new HashMap<>(16);
         zitObjects.forEach(zitObject -> {
