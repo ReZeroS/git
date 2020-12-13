@@ -1,6 +1,7 @@
 package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
+import club.qqtim.converter.IdConverter;
 import club.qqtim.data.CommitObject;
 import club.qqtim.context.ZitContext;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +22,13 @@ import java.util.List;
 @CommandLine.Command(name = "log")
 public class Log implements Runnable{
 
-    @CommandLine.Parameters(index = "0", defaultValue = ConstantVal.HEAD_ALIAS)
+    @CommandLine.Parameters(index = "0", defaultValue = ConstantVal.HEAD_ALIAS, converter = IdConverter.class)
     private String id;
 
     @Override
     public void run() {
         // if no args, set HEAD
         // else use tag or hash as object id
-        final String id = ZitContext.getId(this.id);
         final List<String> idList = ZitContext.iteratorCommitsAndParents(Collections.singletonList(id));
         idList.forEach(objectId -> {
             CommitObject commit = Commit.getCommit(objectId);

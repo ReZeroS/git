@@ -38,6 +38,8 @@
 ## Usage
 
 0. `alias zit='java -jar ../zit-1.0-SNAPSHOT-shaded.jar'` alias the zit executable file.
+   
+   - windows could set here `C:\Program Files\Git\etc\profile.d\aliases.sh`
 
 1. `zit init` init directory `.zit` which include `objects` subdirectory and set `main` branch as default to prevent detached head
 

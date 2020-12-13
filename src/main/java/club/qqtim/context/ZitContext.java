@@ -67,20 +67,20 @@ public class ZitContext {
     }
 
 
-    /**
-     * return all ref objects in the context
-     *
-     * @return HEAD and all ref objects in refs directory
-     */
-    public static List<RefObject> iteratorRefs() {
-        return iteratorRefs(true);
+
+    public static List<RefObject> iteratorRefs(String prefix) {
+        return iteratorRefs(prefix, true);
+    }
+
+    public static List<RefObject> iteratorRefs(boolean deference) {
+        return iteratorRefs(ConstantVal.EMPTY, deference);
     }
     /**
      * return all ref objects in the context
      *
      * @return HEAD and all ref objects in refs directory
      */
-    public static List<RefObject> iteratorRefs(boolean dereference) {
+    public static List<RefObject> iteratorRefs(String prefix, boolean dereference) {
         List<String> refs = new ArrayList<>(1);
         refs.add(ConstantVal.HEAD);
 
@@ -98,13 +98,15 @@ public class ZitContext {
 
         refs.addAll(pathList);
 
-        return refs.stream().map(refName -> {
-            final RefValue ref = getRef(refName, dereference);
-            final RefObject refObject = new RefObject();
-            refObject.setRefName(refName);
-            refObject.setRefValue(ref);
-            return refObject;
-        }).collect(Collectors.toList());
+        return refs.stream()
+                .filter(refName -> refName.startsWith(prefix))
+                .map(refName -> {
+                    final RefValue ref = getRef(refName, dereference);
+                    final RefObject refObject = new RefObject();
+                    refObject.setRefName(refName);
+                    refObject.setRefValue(ref);
+                    return refObject;
+                }).collect(Collectors.toList());
     }
 
 
