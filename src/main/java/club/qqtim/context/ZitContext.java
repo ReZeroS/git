@@ -214,7 +214,7 @@ public class ZitContext {
         FileUtil.mkdir(OBJECTS_DIR);
     }
 
-    public byte[] getObject(String hash) {
+    public static byte[] getObject(String hash) {
         return getObject(hash, ConstantVal.BLOB);
     }
 

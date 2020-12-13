@@ -1,5 +1,7 @@
 package club.qqtim.diff;
 
+import club.qqtim.context.ZitContext;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,10 +25,25 @@ public class Diff {
             final String from = objectIds.get(0);
             final String to = objectIds.get(1);
             if (!Objects.equals(from, to)) {
-                output.append(String.format("changed: %s\n", path));
+                output.append(diffBlobs(from, to, path));
+//                output.append(String.format("changed: %s\n", path));
             }
         });
         return output.toString();
+    }
+
+    /**
+     * https://qqtim.club/2020/06/14/git-myers-diff/
+     * @param from from blob id
+     * @param to     to blob id
+     * @param path file path
+     * @return output
+     */
+    private static String diffBlobs(String from, String to, String path) {
+        final byte[] fromContent = ZitContext.getObject(from);
+        final byte[] toContent = ZitContext.getObject(to);
+
+        return null;
     }
 
     /**
