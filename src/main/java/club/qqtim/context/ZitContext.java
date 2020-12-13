@@ -68,6 +68,10 @@ public class ZitContext {
 
 
 
+    public static List<RefObject> iteratorRefs() {
+        return iteratorRefs(ConstantVal.EMPTY, true);
+    }
+
     public static List<RefObject> iteratorRefs(String prefix) {
         return iteratorRefs(prefix, true);
     }
@@ -172,9 +176,11 @@ public class ZitContext {
             refOrId = ConstantVal.HEAD;
         }
         for (String path : ConstantVal.REF_REGISTRY_DIRECTORIES) {
-            final RefValue ref = ZitContext.getRef(String.format(path, refOrId), false);
+            final String refValue = String.format(path, refOrId);
+            final RefValue ref = ZitContext.getRef(refValue, false);
             if (Objects.nonNull(ref.getValue())) {
-                return ref.getValue();
+                // pay attention, check use dereference false but get use true
+                return ZitContext.getRef(refValue).getValue();
             }
         }
         if (RegexConstantVal.ALL_HEX.matcher(refOrId).find()) {
