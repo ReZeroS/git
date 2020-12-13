@@ -49,9 +49,18 @@ public class Log implements Runnable{
         final List<String> idList = ZitContext.iteratorCommitsAndParents(Collections.singletonList(id));
         idList.forEach(objectId -> {
             CommitObject commit = Commit.getCommit(objectId);
-            String refsStr = String.join(",", refValueName.getOrDefault(objectId, Collections.emptyList()));
-            log.info(String.format("%s %s (%s)\n", ConstantVal.COMMIT, objectId, refsStr));
-            log.info(String.format("%s\n", commit.getMessage()));
+            final List<String> refNames = refValueName.getOrDefault(objectId, Collections.emptyList());
+            printCommit(objectId, commit, refNames);
         });
+    }
+
+    public static void printCommit(String objectId, CommitObject commit) {
+        printCommit(objectId, commit, Collections.emptyList());
+    }
+
+    public static void printCommit(String objectId, CommitObject commit, List<String> refNames) {
+        String refsStr = String.join(",", refNames);
+        log.info(String.format("%s %s (%s)\n", ConstantVal.COMMIT, objectId, refsStr));
+        log.info(String.format("%s\n", commit.getMessage()));
     }
 }
