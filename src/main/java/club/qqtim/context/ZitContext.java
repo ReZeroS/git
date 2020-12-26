@@ -220,7 +220,7 @@ public class ZitContext {
 
     public static byte[] getObject(String hash, String type) {
         String path = OBJECTS_DIR + "/" + hash;
-        log.info("get the content of {} file", path);
+        log.debug("get the content of {} file", path);
         try {
             return FileUtil.getFileByteSource(path, type).read();
         } catch (IOException e) {
@@ -231,7 +231,7 @@ public class ZitContext {
 
     public static String getObjectAsString(String hash, String type) {
         String path = OBJECTS_DIR + "/" + hash;
-        log.info("get the content of {} file", path);
+        log.debug("get the content of {} file", path);
         try {
             return FileUtil.getFileAsString(path, type);
         } catch (IOException e) {
