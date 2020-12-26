@@ -1,5 +1,6 @@
 package club.qqtim.data;
 
+import club.qqtim.common.ConstantVal;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,11 +23,11 @@ public class DataTest {
 
     @Test
     public void testIteratorRefs() throws IOException {
+        final Path basePath = Paths.get(".");
         final Path objectPath = Paths.get(".zit/objects");
         final Path refsDir = Paths.get("refs");
-        final List<String> pathList = Files.walk(objectPath, Integer.MAX_VALUE)
-                .filter(Files::isRegularFile)
-                .map(path -> refsDir.resolve(objectPath.relativize(path)).toString()).collect(Collectors.toList());
+        final List<String> pathList =  Files.walk(basePath, Integer.MAX_VALUE)
+                .filter(Files::isRegularFile).map(Path::toString).collect(Collectors.toList());
         pathList.forEach(System.out::println);
     }
 }

@@ -41,12 +41,17 @@ public class ReadTree implements Runnable {
 
     private static List<ZitObject> iteratorTree(String treeId) {
         final String tree = ZitContext.getObjectAsString(treeId, "tree");
+        assert tree != null;
         return Arrays.stream(tree.split(ConstantVal.NEW_LINE))
                 .map(object -> object.split(ConstantVal.SINGLE_SPACE))
                 .map(objectFields -> new ZitObject(objectFields[0], objectFields[1], objectFields[2]))
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @param treeId
+     * @return key: path val: object id
+     */
     public static Map<String, String> getTree(String treeId) {
         return getTree(treeId, ConstantVal.EMPTY);
     }
@@ -75,7 +80,7 @@ public class ReadTree implements Runnable {
         final Map<String, String> treeMap = getTree(hash, ConstantVal.BASE_PATH);
         treeMap.forEach((path, objectId) -> {
             FileUtil.createParentDirs(path);
-            final byte[] objectBytes = new ZitContext().getObject(objectId);
+            final byte[] objectBytes = ZitContext.getObject(objectId);
             FileUtil.createFile(objectBytes, path);
         });
     }

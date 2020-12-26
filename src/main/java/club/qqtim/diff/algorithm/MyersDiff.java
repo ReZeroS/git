@@ -1,6 +1,4 @@
-package club.qqtim.algorithm;
-
-import club.qqtim.diff.LineObject;
+package club.qqtim.diff.algorithm;
 
 import java.util.ArrayList;
 import java.util.Collections;

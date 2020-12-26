@@ -1,11 +1,9 @@
 package club.qqtim.diff;
 
-import club.qqtim.algorithm.Equalizer;
+import club.qqtim.diff.algorithm.Equalizer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Objects;
 
 /**
  * @title: LineObject

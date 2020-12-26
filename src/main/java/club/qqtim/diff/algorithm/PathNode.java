@@ -1,4 +1,4 @@
-package club.qqtim.algorithm;
+package club.qqtim.diff.algorithm;
 
 /**
  * @title: PathNode

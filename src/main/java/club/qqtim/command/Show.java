@@ -1,10 +1,9 @@
 package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
-import club.qqtim.context.ZitContext;
 import club.qqtim.converter.IdConverter;
 import club.qqtim.data.CommitObject;
-import club.qqtim.diff.Diff;
+import club.qqtim.diff.DiffUtil;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -35,7 +34,7 @@ public class Show implements Runnable {
 
         Log.printCommit(id, commit);
 
-        final String result = Diff.diffTrees(
+        final String result = DiffUtil.diffTrees(
                 ReadTree.getTree(parentTree), ReadTree.getTree(commit.getTree())
         );
 

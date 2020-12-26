@@ -4,7 +4,7 @@
 
 原作者地址: [https://www.leshenko.net/p/ugit](https://www.leshenko.net/p/ugit)
 
-对 `git` 挺感兴趣，就照着实现了一个java版本的，多谢作者大佬写出这样的文章系列能让我们小白也体验一把。
+对 `git` 挺感兴趣，就照着实现了一个java版本的，多谢作者大佬写出这样的文章系列能让小弟我也体验一把。
 
 ## TODO
 
@@ -33,7 +33,16 @@
    - `root` 所指的是当前正在遍历的这个文件夹的本身的地址
    - `dirs` 是一个 list ，内容是该文件夹中所有的目录的名字(不包括子目录)
    - `files` 同样是 list , 内容是该文件夹中所有的文件(不包括子目录)
-   - Java nio 包的 `Files` class 也同样提供了类似的功能 
+   - Java nio 包的 `Files` class 也同样提供了类似的功能, `walk` 获取的目录是以传入 PATH 开头的相对目录
+   - 配合 walk 可用的 `relative, resolve, System.lineSeparator` 等   
+
+6. diff 算法没搞明白（-_- 菜的浑身发抖），暂时收集到这些资料，找了网上的一个实现，后续有时间理解下这里然后再决定重写一版
+   - `doc` 文件夹下的工具和 paper
+   - blog 
+      - https://blog.jcoglan.com/2017/02/12/the-myers-diff-algorithm-part-1/
+      - https://blog.robertelder.org/diff-algorithm/
+      - http://simplygenius.net/Article/DiffTutorial1
+      - https://chenshinan.github.io/2019/05/02/git%E7%94%9F%E6%88%90diff%E5%8E%9F%E7%90%86%EF%BC%9AMyers%E5%B7%AE%E5%88%86%E7%AE%97%E6%B3%95/
    
 ## Usage
 
@@ -80,4 +89,4 @@
    
    - every ref under refs/heads as a branch.
      
-12. 
+12. `zit show` will use diff show changes.

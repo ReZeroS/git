@@ -1,7 +1,7 @@
 package club.qqtim.diff;
 
-import club.qqtim.algorithm.MyersDiff;
-import club.qqtim.algorithm.PathNode;
+import club.qqtim.diff.algorithm.MyersDiff;
+import club.qqtim.diff.algorithm.PathNode;
 import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
 import com.google.common.base.Charsets;
@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
  * @Version 1.0.0
  */
 @Slf4j
-public class Diff {
+public class DiffUtil {
 
 
     public static String diffTrees(Map<String, String> treeFrom, Map<String, String> treeTo) {
@@ -124,6 +124,7 @@ public class Diff {
      * @param trees compare trees
      * @return key path, val objectIds
      */
+    @SafeVarargs
     public static Map<String, List<String>> compareTrees(Map<String, String> ...trees) {
         Map<String, List<String>> entries = new HashMap<>(1);
         for (int i = 0; i < trees.length; i++) {
