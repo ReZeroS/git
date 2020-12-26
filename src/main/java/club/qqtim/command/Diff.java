@@ -41,17 +41,18 @@ public class Diff implements Callable<String> {
     @Override
     public String call() {
         final CommitObject commit = Commit.getCommit(id);
-        DiffUtil.diffTrees(
+        final String diffChanges = DiffUtil.diffTrees(
                 ReadTree.getTree(commit.getTree()), getWorkingTree());
-        return null;
+        log.info(diffChanges);
+        return diffChanges;
     }
 
-    private Map<String, String> getWorkingTree() {
+    public static Map<String, String> getWorkingTree() {
         final Path basePath = Paths.get(ConstantVal.BASE_PATH);
         try {
             return Files.walk(basePath, Integer.MAX_VALUE)
                     .filter(Files::isRegularFile)
-                    .map(path -> basePath.resolve(path).toString())
+                    .map(path -> basePath.relativize(path).toString())
                     .filter(ZitContext::isNotIgnored)
                     .collect(Collectors.toMap(Function.identity(), path -> {
                         HashObject hashObject = new HashObject();

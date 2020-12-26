@@ -5,6 +5,7 @@ import club.qqtim.command.Branch;
 import club.qqtim.command.CatFile;
 import club.qqtim.command.Checkout;
 import club.qqtim.command.Commit;
+import club.qqtim.command.Diff;
 import club.qqtim.command.HashObject;
 import club.qqtim.command.Init;
 import club.qqtim.command.Lg;
@@ -34,7 +35,8 @@ import picocli.CommandLine;
         Branch.class,
         Status.class,
         Reset.class,
-        Show.class
+        Show.class,
+        Diff.class
 })
 public class Zit {
 }

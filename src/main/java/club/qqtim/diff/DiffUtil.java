@@ -27,6 +27,23 @@ import java.util.stream.IntStream;
 public class DiffUtil {
 
 
+    public static List<SimplyChange> iteratorChangedFiles(Map<String, String> fromTree, Map<String, String> toTree) {
+        final Map<String, List<String>> pathObjectIds = compareTrees(fromTree, toTree);
+        return pathObjectIds.entrySet().stream().map(entry -> {
+            final String path = entry.getKey();
+            final List<String> objectIds = entry.getValue();
+            final String fromObject = objectIds.get(0);
+            final String toObject = objectIds.get(1);
+            if (!Objects.equals(fromObject, toObject)) {
+                final SimplyChange simplyChange = new SimplyChange();
+                simplyChange.setPath(path);
+                simplyChange.setAction(fromObject == null? "new file": toObject == null? "delete file": "modify file");
+                return simplyChange;
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
     public static String diffTrees(Map<String, String> treeFrom, Map<String, String> treeTo) {
         StringBuilder output = new StringBuilder();
         final Map<String, List<String>> pathObjectIds = compareTrees(treeFrom, treeTo);
@@ -120,7 +137,7 @@ public class DiffUtil {
     }
 
     /**
-     * given trees, return object ids
+     * given trees, return path, object ids
      * @param trees compare trees
      * @return key path, val objectIds
      */
