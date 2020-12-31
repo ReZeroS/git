@@ -13,8 +13,12 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class LineObject implements Equalizer<LineObject> {
+
+    /**
+     * sync, plus, minus
+     */
+    private String action;
 
     /**
      * row number, default from zero
@@ -26,6 +30,11 @@ public class LineObject implements Equalizer<LineObject> {
      * line content which contains the whole content of the current line
      */
     private String lineContent;
+
+    public LineObject(Integer index, String lineContent) {
+        this.index = index;
+        this.lineContent = lineContent;
+    }
 
     @Override
     public String toString() {

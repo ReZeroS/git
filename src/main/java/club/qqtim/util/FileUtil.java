@@ -1,6 +1,7 @@
 package club.qqtim.util;
 
 import club.qqtim.common.ConstantVal;
+import club.qqtim.context.ZitContext;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteSource;
 import com.google.common.io.Files;
@@ -112,4 +113,20 @@ public final class FileUtil {
         fileWithHeaderBuffer.get(fileContent, 0, fileContent.length);
         return ByteSource.wrap(fileContent);
     }
+
+
+
+    public static void emptyCurrentDir() {
+        File file = new File(ConstantVal.BASE_PATH);
+        final String[] paths = file.list();
+        if (paths != null) {
+            Arrays.stream(paths).forEach(path -> {
+                if (ZitContext.isNotIgnored(path)) {
+                    FileUtil.deleteDir(path);
+                }
+            });
+        }
+    }
+
+
 }

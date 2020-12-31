@@ -43,7 +43,31 @@
       - https://blog.robertelder.org/diff-algorithm/
       - http://simplygenius.net/Article/DiffTutorial1
       - https://chenshinan.github.io/2019/05/02/git%E7%94%9F%E6%88%90diff%E5%8E%9F%E7%90%86%EF%BC%9AMyers%E5%B7%AE%E5%88%86%E7%AE%97%E6%B3%95/
-   
+   - 概念普及
+      - d: 代表步数即最小操作数，我们的第一个大目的就是找出这个最小的数
+      - 操作：d 每加 1 意味进行了一次 x + 1 + diagonal 或者 y + 1 + diagonal. 其中 diagonal 为遇到斜线的数量
+      - x， y: 分别指 A B 两个串的行数，x 增加时意味着从 A 串删除， y 增加时意味着从 B 串增加， x,y 同时增加意味着遇到斜线了
+      - k: x - y 的值
+      - d 和 xyk 的关系：
+        - d 代表步数，可以到达点 (i，j), 如果期间经过了对角线， i, j 必定同时加 1
+        - 由上可得 d 可到达的步数为 (i + diagonal, j + diagonal), 其中diagonal 为经过对角线的次数
+        - 那么k = x - y = i - j  的奇偶性就依赖于 d
+        - 当 d 为奇数， i + j 就是奇数，自然 i-j 就是奇数 => d 奇 k 奇, d 偶 k 偶
+        - k 这里有个重点意识：任何抵达 k 线的点 必经过了至少 |k| 个 增或者删操作
+        - 最终为了走到格子右下角，那么其实最终的 x, y，k 都已经确定了，只不过要确定的是 d 而已
+        - d 之所以可以作为第一层循环是因为 d = f(d - 1), 即 d - 1 是 d 的子问题
+        - d 确定为最外层循环后，k 的范围可以根据 d 来确认，至此，最内层要做的就是找到能抵达的最远的距离，最远距离超过右下角时目标达成，此时的 d 就是最小 d
+        - 上述推论下问题只剩一个了，如何找到最远的距离？（思考这个问题时先假设没有斜线这个概念，只有纯粹得下或者右，这样可能有助于理解）
+            - k是以2来迭代的， 每次 `v[k] = v[k-1]` 或者 v[k + 1], 这里由于每次d的奇偶性限定了 k 的奇偶性，其实这里的 `v[k-1] v[k+1]` 取得上轮外层 d 循环得值
+            - 换句话说 当前轮得 `V[k]` 是指 `V[k+-1]` 走了一步后得结果，而`v[k-1]` 到 `v[k]` 一定是 v 往右走了至少一步（超过一步得都是斜线）, 所以 `x = v[k-1] + 1`, 而 `v[k+1]` 则是往下走了一步，这时 `x` 不变
+            - `k == -d`, 此时只能从 `k+1` 往下走( `k -1` 此时还没有值，并且越界，`k+1` 往右走就到 `k+2` 了，所以走了一步后 x = v[k+1] ) 同理， `k = d` 自然 `k - 1` 往右走, 此时 `x+1`
+            - 其他情况自然取 `v[k -1]`  `v[k + 1]` 比较大得那个值
+            ```python
+            if k == -D or k != D and V[k - 1] < V[k + 1]:
+                   x = V[k + 1]
+            else:
+                   x = V[k - 1] + 1
+            ```
 ## Usage
 
 0. `alias zit='java -jar ../zit-1.0-SNAPSHOT-shaded.jar'` alias the zit executable file.
@@ -89,4 +113,5 @@
    
    - every ref under refs/heads as a branch.
      
-12. `zit show` will use diff show changes.
+12. `zit show` will use diff show changes detail while status only show simply changes info.
+

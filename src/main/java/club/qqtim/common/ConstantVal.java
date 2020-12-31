@@ -10,6 +10,12 @@ import java.util.List;
 public final class ConstantVal {
     public static final String HASH_ALGORITHM = "SHA-1";
 
+    // action type
+    public static final String SYNC = "SYNC";
+    public static final String PLUS = "PLUS";
+    public static final String MINUS = "MINUS";
+
+
     // ref type
 
     public static final String HEAD = "HEAD";

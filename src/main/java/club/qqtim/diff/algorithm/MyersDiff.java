@@ -1,5 +1,8 @@
 package club.qqtim.diff.algorithm;
 
+import club.qqtim.common.ConstantVal;
+import club.qqtim.diff.LineObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -89,11 +92,42 @@ public class MyersDiff<T extends Equalizer<T>> {
         return equalizer.test(orig, rev);
     }
 
-    /**
-     * 打印diff
-     */
-    public List<String> buildDiff(PathNode path, List<T> orig, List<T> rev) {
-        List<String> result = new ArrayList<>();
+//    /**
+//     * 打印diff
+//     */
+//    public List<String> buildDiff(PathNode path, List<T> orig, List<T> rev) {
+//        List<String> result = new ArrayList<>();
+//        if (path == null)
+//            throw new IllegalArgumentException("path is null");
+//        if (orig == null)
+//            throw new IllegalArgumentException("original sequence is null");
+//        if (rev == null)
+//            throw new IllegalArgumentException("revised sequence is null");
+//        while (path.prev != null && path.prev.j >= 0) {
+//            if (path.isSnake()) {
+//                int endi = path.i;
+//                int begini = path.prev.i;
+//                for (int i = endi - 1; i >= begini; i--) {
+//                    result.add("  " + orig.get(i));
+//                }
+//            } else {
+//                int i = path.i;
+//                int j = path.j;
+//                int prei = path.prev.i;
+//                if (prei < i) {
+//                    result.add("- " + orig.get(i - 1));
+//                } else {
+//                    result.add("+ " + rev.get(j - 1));
+//                }
+//            }
+//            path = path.prev;
+//        }
+//        Collections.reverse(result);
+//        return result;
+//    }
+
+    public List<LineObject> buildDiff(PathNode path, List<LineObject> orig, List<LineObject> rev) {
+        List<LineObject> result = new ArrayList<>();
         if (path == null)
             throw new IllegalArgumentException("path is null");
         if (orig == null)
@@ -105,16 +139,22 @@ public class MyersDiff<T extends Equalizer<T>> {
                 int endi = path.i;
                 int begini = path.prev.i;
                 for (int i = endi - 1; i >= begini; i--) {
-                    result.add("  " + orig.get(i));
+                    final LineObject lineObject = orig.get(i);
+                    lineObject.setAction(ConstantVal.SYNC);
+                    result.add(lineObject);
                 }
             } else {
                 int i = path.i;
                 int j = path.j;
                 int prei = path.prev.i;
                 if (prei < i) {
-                    result.add("- " + orig.get(i - 1));
+                    final LineObject lineObject = orig.get(i - 1);
+                    lineObject.setAction(ConstantVal.MINUS);
+                    result.add(lineObject);
                 } else {
-                    result.add("+ " + rev.get(j - 1));
+                    final LineObject lineObject = orig.get(j - 1);
+                    lineObject.setAction(ConstantVal.PLUS);
+                    result.add(lineObject);
                 }
             }
             path = path.prev;
@@ -122,4 +162,5 @@ public class MyersDiff<T extends Equalizer<T>> {
         Collections.reverse(result);
         return result;
     }
+
 }

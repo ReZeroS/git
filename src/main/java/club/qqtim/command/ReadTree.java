@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static club.qqtim.util.FileUtil.emptyCurrentDir;
 
 /**
  * @author lijie78
@@ -83,18 +84,6 @@ public class ReadTree implements Runnable {
             final byte[] objectBytes = ZitContext.getObject(objectId);
             FileUtil.createFile(objectBytes, path);
         });
-    }
-
-    private void emptyCurrentDir() {
-        File file = new File(ConstantVal.BASE_PATH);
-        final String[] paths = file.list();
-        if (paths != null) {
-            Arrays.stream(paths).forEach(path -> {
-                if (ZitContext.isNotIgnored(path)) {
-                    FileUtil.deleteDir(path);
-                }
-            });
-        }
     }
 
 

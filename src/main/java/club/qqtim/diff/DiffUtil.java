@@ -37,7 +37,7 @@ public class DiffUtil {
             if (!Objects.equals(fromObject, toObject)) {
                 final SimplyChange simplyChange = new SimplyChange();
                 simplyChange.setPath(path);
-                simplyChange.setAction(fromObject == null? "new file": toObject == null? "delete file": "modify file");
+                simplyChange.setAction(fromObject == null ? "new file" : toObject == null ? "delete file" : "modify file");
                 return simplyChange;
             }
             return null;
@@ -52,7 +52,12 @@ public class DiffUtil {
             final String to = objectIds.get(1);
             if (!Objects.equals(from, to)) {
                 output.append(String.format("\nchange file: %s\n", path));
-                output.append(diffBlobs(from, to));
+                final List<LineObject> lineObjects = diffBlobs(from, to);
+                final String diffResult = lineObjects.stream().map(lineObject -> String.format("%s %s %s",
+                        ConstantVal.SYNC.equals(lineObject.getAction()) ? " "
+                                : ConstantVal.PLUS.equals(lineObject.getAction()) ? "+" : "-",
+                        lineObject.getIndex(), lineObject.getLineContent())).collect(Collectors.joining(System.lineSeparator()));
+                output.append(diffResult);
             }
         });
         return output.toString();
@@ -61,11 +66,12 @@ public class DiffUtil {
     /**
      * https://qqtim.club/2020/06/14/git-myers-diff/
      * https://blog.robertelder.org/diff-algorithm/
+     *
      * @param from from blob id
-     * @param to     to blob id
+     * @param to   to blob id
      * @return output
      */
-    private static String diffBlobs(String from, String to) {
+    private static List<LineObject> diffBlobs(String from, String to) {
         final List<LineObject> fromLineObjects = convertObjectContentToLines(from);
         final List<LineObject> toLineObjects = convertObjectContentToLines(to);
 
@@ -73,13 +79,12 @@ public class DiffUtil {
         try {
             PathNode pathNode = myersDiff.buildPath(fromLineObjects, toLineObjects);
 //            log.info(String.valueOf(pathNode));
-            final List<String> diffResult = myersDiff.buildDiff(pathNode, fromLineObjects, toLineObjects);
-            return String.join(System.lineSeparator(), diffResult);
+            return myersDiff.buildDiff(pathNode, fromLineObjects, toLineObjects);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
 
-        return ConstantVal.EMPTY;
+        return Collections.emptyList();
     }
 
     private static int findShortestEditCount(List<LineObject> fromLineObjects, List<LineObject> toLineObjects) {
@@ -93,7 +98,7 @@ public class DiffUtil {
         for (int d = 0; d < max + 1; d++) {
             // for k in range(-D, D + 1, 2):
             // after liner space optimize
-            for (int k = -(d - 2*Integer.max(0, d - m)); k < (d - 2*Integer.max(0, d - n)); ++k) {
+            for (int k = -(d - 2 * Integer.max(0, d - m)); k < (d - 2 * Integer.max(0, d - n)); ++k) {
                 int x;
                 final int kIndex = convertIndex(k, v.length);
                 final int kPlusIndex = convertIndex(k + 1, v.length);
@@ -138,11 +143,12 @@ public class DiffUtil {
 
     /**
      * given trees, return path, object ids
+     *
      * @param trees compare trees
      * @return key path, val objectIds
      */
     @SafeVarargs
-    public static Map<String, List<String>> compareTrees(Map<String, String> ...trees) {
+    public static Map<String, List<String>> compareTrees(Map<String, String>... trees) {
         Map<String, List<String>> entries = new HashMap<>(1);
         for (int i = 0; i < trees.length; i++) {
             for (Map.Entry<String, String> entry : trees[i].entrySet()) {
@@ -153,5 +159,32 @@ public class DiffUtil {
             }
         }
         return entries;
+    }
+
+    /**
+     * key: path val: blob content
+     *
+     * @param fromTree source tree
+     * @param toTree   target tree
+     * @return merged tree
+     */
+    public static Map<String, String> mergeTrees(Map<String, String> fromTree, Map<String, String> toTree) {
+        final Map<String, List<String>> comparedTrees = compareTrees(fromTree, toTree);
+        Map<String, String> mergedTrees = new HashMap<>();
+        comparedTrees.forEach((path, trees) -> {
+            final String mergeBlobs = mergeBlobs(trees.get(0), trees.get(1));
+            mergedTrees.put(path, mergeBlobs);
+        });
+        return mergedTrees;
+    }
+
+    /**
+     * @param fromBlob from blob id
+     * @param toBlob   to blob id
+     * @return merged blob content
+     */
+    private static String mergeBlobs(String fromBlob, String toBlob) {
+        final List<LineObject> lineObjects = diffBlobs(fromBlob, toBlob);
+        return lineObjects.stream().map(LineObject::getLineContent).collect(Collectors.joining(System.lineSeparator()));
     }
 }
