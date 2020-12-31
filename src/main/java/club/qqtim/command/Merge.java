@@ -4,6 +4,7 @@ import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
 import club.qqtim.converter.IdConverter;
 import club.qqtim.data.CommitObject;
+import club.qqtim.data.RefValue;
 import club.qqtim.diff.DiffUtil;
 import club.qqtim.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +33,10 @@ public class Merge implements Runnable {
         final CommitObject head = Commit.getCommit(headRef);
         final CommitObject other = Commit.getCommit(this.other);
 
+        ZitContext.updateRef(ConstantVal.MERGE_HEAD, new RefValue(false, this.other));
+
         readTreeMerged(head.getTree(), other.getTree());
-        log.info("merged in working tree");
+        log.info("merged in working tree\nPlease commit");
     }
 
     private void readTreeMerged(String fromTree, String toTree) {

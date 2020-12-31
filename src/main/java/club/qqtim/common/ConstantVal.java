@@ -21,6 +21,8 @@ public final class ConstantVal {
     public static final String HEAD = "HEAD";
     public static final String HEAD_ALIAS = "@";
 
+    public static final String MERGE_HEAD = "MERGE_HEAD";
+
     // param type
 
     public static final String NONE = "None";

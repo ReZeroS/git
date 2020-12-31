@@ -34,6 +34,11 @@ public class Status implements Runnable {
             log.info("HEAD detached at {}", headId.substring(0, 11));
         }
 
+        final String mergeHeadId = ZitContext.getRef(ConstantVal.MERGE_HEAD).getValue();
+        if (Objects.nonNull(mergeHeadId)) {
+            log.info("Merging with {}", mergeHeadId.substring(0, 11));
+        }
+
         log.info("\nChanges to be committed:\n");
 
         final String headTree = Commit.getCommit(headId).getTree();

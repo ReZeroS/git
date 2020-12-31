@@ -62,6 +62,11 @@ public class Commit implements Callable<String> {
         if (headId != null) {
             commitMessage += String.format("%s %s\n", ConstantVal.PARENT, headId);
         }
+        String mergedHead = ZitContext.getRef(ConstantVal.MERGE_HEAD).getValue();
+        if (mergedHead != null) {
+            commitMessage += String.format("%s %s\n", ConstantVal.PARENT, mergedHead);
+            ZitContext.deleteRef(ConstantVal.MERGE_HEAD, false);
+        }
 
         commitMessage += String.format("\n%s\n", message);
 
