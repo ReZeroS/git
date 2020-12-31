@@ -11,6 +11,7 @@ import club.qqtim.command.Init;
 import club.qqtim.command.Lg;
 import club.qqtim.command.Log;
 import club.qqtim.command.Merge;
+import club.qqtim.command.MergeBase;
 import club.qqtim.command.ReadTree;
 import club.qqtim.command.Reset;
 import club.qqtim.command.Show;
@@ -38,7 +39,8 @@ import picocli.CommandLine;
         Reset.class,
         Show.class,
         Diff.class,
-        Merge.class
+        Merge.class,
+        MergeBase.class
 })
 public class Zit {
 }
