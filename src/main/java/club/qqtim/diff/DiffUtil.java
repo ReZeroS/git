@@ -164,15 +164,15 @@ public class DiffUtil {
     /**
      * key: path val: blob content
      *
-     * @param fromTree source tree
-     * @param toTree   target tree
+     * @param headTree source tree
+     * @param otherTree   target tree
      * @return merged tree
      */
-    public static Map<String, String> mergeTrees(Map<String, String> fromTree, Map<String, String> toTree) {
-        final Map<String, List<String>> comparedTrees = compareTrees(fromTree, toTree);
+    public static Map<String, String> mergeTrees(Map<String, String> baseTree, Map<String, String> headTree, Map<String, String> otherTree) {
+        final Map<String, List<String>> comparedTrees = compareTrees(baseTree, headTree, otherTree);
         Map<String, String> mergedTrees = new HashMap<>();
         comparedTrees.forEach((path, trees) -> {
-            final String mergeBlobs = mergeBlobs(trees.get(0), trees.get(1));
+            final String mergeBlobs = mergeBlobs(trees.get(0), trees.get(1), trees.get(2));
             mergedTrees.put(path, mergeBlobs);
         });
         return mergedTrees;
@@ -183,7 +183,9 @@ public class DiffUtil {
      * @param toBlob   to blob id
      * @return merged blob content
      */
-    private static String mergeBlobs(String fromBlob, String toBlob) {
+    private static String mergeBlobs(String baseTree, String fromBlob, String toBlob) {
+
+        //todo Three-way merge
         final List<LineObject> lineObjects = diffBlobs(fromBlob, toBlob);
         return lineObjects.stream().map(LineObject::getLineContent).collect(Collectors.joining(System.lineSeparator()));
     }

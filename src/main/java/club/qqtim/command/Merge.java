@@ -30,18 +30,21 @@ public class Merge implements Runnable {
     @Override
     public void run() {
         final String headRef = ZitContext.getRef(ConstantVal.HEAD).getValue();
+
+        final String mergeBase = MergeBase.getMergeBase(this.other, headRef);
+        final CommitObject mergeBaseCommit = Commit.getCommit(mergeBase);
         final CommitObject head = Commit.getCommit(headRef);
         final CommitObject other = Commit.getCommit(this.other);
 
         ZitContext.updateRef(ConstantVal.MERGE_HEAD, new RefValue(false, this.other));
 
-        readTreeMerged(head.getTree(), other.getTree());
+        readTreeMerged(mergeBaseCommit.getTree(), head.getTree(), other.getTree());
         log.info("merged in working tree\nPlease commit");
     }
 
-    private void readTreeMerged(String fromTree, String toTree) {
+    private void readTreeMerged(String baseTree, String headTree, String otherTree) {
         FileUtil.emptyCurrentDir();
-        Map<String, String> pathBlobs = DiffUtil.mergeTrees(ReadTree.getTree(fromTree), ReadTree.getTree(toTree));
+        Map<String, String> pathBlobs = DiffUtil.mergeTrees(ReadTree.getTree(baseTree), ReadTree.getTree(headTree), ReadTree.getTree(otherTree));
         pathBlobs.forEach((path, blobContent) -> FileUtil.createFile(blobContent.getBytes(StandardCharsets.UTF_8), path));
     }
 }
