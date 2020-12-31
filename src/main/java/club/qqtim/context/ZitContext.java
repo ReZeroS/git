@@ -58,8 +58,13 @@ public class ZitContext {
             visitedIds.add(id);
             resultSet.add(id);
             final CommitObject commit = Commit.getCommit(id);
-            if (Objects.nonNull(commit.getParent())) {
-                idsDeque.offerFirst(commit.getParent());
+            if (Objects.nonNull(commit.getParents()) && !commit.getParents().isEmpty()) {
+                // todo java ugly slice
+                idsDeque.offerFirst(commit.getParents().get(0));
+                if (commit.getParents().size() > 1) {
+                    final List<String> lastCommits = commit.getParents().subList(1, commit.getParents().size());
+                    lastCommits.forEach(idsDeque::offerLast);
+                }
             }
         }
         return new ArrayList<>(resultSet);

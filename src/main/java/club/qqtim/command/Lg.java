@@ -46,9 +46,10 @@ public class Lg implements Callable<String> {
             final CommitObject commit = Commit.getCommit(refId);
             final String shapeBox = String.format("\"{%s}\" [shape=box style=filled label=\"{%s}\"]\n", refId, refId.substring(0, 11));
             dotGraph.append(shapeBox);
-            if (Objects.nonNull(commit.getParent())) {
-                final String parent = String.format("\"{%s}\" -> \"{%s}\"\n", refId, commit.getParent());
-                dotGraph.append(parent);
+            if (Objects.nonNull(commit.getParents()) && !commit.getParents().isEmpty()) {
+                commit.getParents().forEach(parent -> {
+                    dotGraph.append(String.format("\"{%s}\" -> \"{%s}\"\n", refId, parent));
+                });
             }
         });
         dotGraph.append("}");

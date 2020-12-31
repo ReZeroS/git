@@ -28,8 +28,8 @@ public class Show implements Runnable {
         final CommitObject commit = Commit.getCommit(id);
 
         String parentTree = null;
-        if (Objects.nonNull(commit.getParent())) {
-            parentTree = Commit.getCommit(commit.getParent()).getTree();
+        if (Objects.nonNull(commit.getParents()) && !commit.getParents().isEmpty()) {
+            parentTree = Commit.getCommit(commit.getParents().get(0)).getTree();
         }
 
         Log.printCommit(id, commit);

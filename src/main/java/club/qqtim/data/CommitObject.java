@@ -2,6 +2,8 @@ package club.qqtim.data;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @title: Commit
  * @Author lijie78
@@ -17,9 +19,9 @@ public class CommitObject {
     private String tree;
 
     /**
-     * parent commit id
+     * parents commit id
      */
-    private String parent;
+    private List<String> parents;
 
     /**
      * commit message

@@ -8,7 +8,9 @@ import com.google.common.base.Charsets;
 import lombok.Data;
 import picocli.CommandLine;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -33,6 +35,7 @@ public class Commit implements Callable<String> {
         final String commitContent = new String(commit, Charsets.UTF_8);
         final String[] lines = commitContent.split(ConstantVal.NEW_LINE);
 
+        List<String> parents = new ArrayList<>();
         CommitObject commitObject = new CommitObject();
         Arrays.stream(lines).forEach(line -> {
             final String[] fields = line.split(ConstantVal.SINGLE_SPACE);
@@ -40,9 +43,10 @@ public class Commit implements Callable<String> {
                 commitObject.setTree(fields[1]);
             }
             if (ConstantVal.PARENT.equals(fields[0])) {
-                commitObject.setParent(fields[1]);
+                parents.add(fields[1]);
             }
         });
+        commitObject.setParents(parents);
         commitObject.setMessage(commitContent);
         return commitObject;
     }
