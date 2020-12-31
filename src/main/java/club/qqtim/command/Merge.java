@@ -32,13 +32,19 @@ public class Merge implements Runnable {
         final String headRef = ZitContext.getRef(ConstantVal.HEAD).getValue();
 
         final String mergeBase = MergeBase.getMergeBase(this.other, headRef);
-        final CommitObject mergeBaseCommit = Commit.getCommit(mergeBase);
-        final CommitObject head = Commit.getCommit(headRef);
-        final CommitObject other = Commit.getCommit(this.other);
+        final CommitObject otherCommit = Commit.getCommit(this.other);
+
+        if (headRef.equals(mergeBase)) {
+            ReadTree.readTree(otherCommit.getTree());
+            ZitContext.updateRef(ConstantVal.HEAD, new RefValue(false, this.other));
+            log.info("Fast-forward merge, no need to commit");
+        }
 
         ZitContext.updateRef(ConstantVal.MERGE_HEAD, new RefValue(false, this.other));
 
-        readTreeMerged(mergeBaseCommit.getTree(), head.getTree(), other.getTree());
+        final CommitObject mergeBaseCommit = Commit.getCommit(mergeBase);
+        final CommitObject headCommit = Commit.getCommit(headRef);
+        readTreeMerged(mergeBaseCommit.getTree(), headCommit.getTree(), otherCommit.getTree());
         log.info("merged in working tree\nPlease commit");
     }
 

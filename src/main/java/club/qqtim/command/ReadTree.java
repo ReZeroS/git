@@ -75,7 +75,7 @@ public class ReadTree implements Runnable {
         return map;
     }
 
-    public void readTree(String id){
+    public static void readTree(String id){
         final String hash = ZitContext.getId(id);
         emptyCurrentDir();
         final Map<String, String> treeMap = getTree(hash, ConstantVal.BASE_PATH);
