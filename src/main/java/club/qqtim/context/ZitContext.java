@@ -91,6 +91,7 @@ public class ZitContext {
     public static List<RefObject> iteratorRefs(String prefix, boolean dereference) {
         List<String> refs = new ArrayList<>(1);
         refs.add(ConstantVal.HEAD);
+        refs.add(ConstantVal.MERGE_HEAD);
 
         //get all file relative path from refs/ , like refs/* format
         final Path refsPath = Paths.get(REFS_DIR_REAL);
@@ -110,11 +111,14 @@ public class ZitContext {
                 .filter(refName -> refName.startsWith(prefix))
                 .map(refName -> {
                     final RefValue ref = getRef(refName, dereference);
+                    if (Objects.isNull(ref.getValue())) {
+                        return null;
+                    }
                     final RefObject refObject = new RefObject();
                     refObject.setRefName(refName);
                     refObject.setRefValue(ref);
                     return refObject;
-                }).collect(Collectors.toList());
+                }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
 
