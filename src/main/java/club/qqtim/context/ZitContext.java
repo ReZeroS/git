@@ -171,6 +171,18 @@ public class ZitContext {
         FileUtil.createFile(value.getBytes(Charsets.UTF_8), String.format("%s/%s", ZIT_DIR, refName));
     }
 
+    public static void deleteRef(String ref) {
+        deleteRef(ref, true);
+    }
+
+    public static void deleteRef(String ref, boolean dereference) {
+        final RefObject refInternal = getRefInternal(ref, dereference);
+        if (Objects.nonNull(refInternal)) {
+            final String refName = refInternal.getRefName();
+            FileUtil.deleteDir(String.format("%s/%s", ZIT_DIR, refName));
+        }
+    }
+
     /**
      * @param refOrId ref or id
      * @return ref
