@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * show what changes in working directory since last commit
  *
  * @title: Diff
- * @Author lijie78
+ * @Author rezeros.github.io
  * @Date: 2020/12/26
  * @Version 1.0.0
  */

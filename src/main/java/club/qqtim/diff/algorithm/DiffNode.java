@@ -2,7 +2,7 @@ package club.qqtim.diff.algorithm;
 
 /**
  * @title: DiffNode
- * @Author lijie78
+ * @Author rezeros.github.io
  * @Date: 2020/12/25
  * @Version 1.0.0
  */

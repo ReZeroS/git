@@ -3,22 +3,20 @@ package club.qqtim.data;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
- * @title: RefObject
- * @Author rezeros.github.io
- * @Date: 2020/12/8
+ * @title: RefObjValue
+ * @Author lijie78
+ * @Date: 2021/1/10
  * @Version 1.0.0
  */
 @Data
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefObject {
+public class RefObjValue {
 
     private String refName;
 
-    private RefValue refValue;
+    private String value;
 
 }

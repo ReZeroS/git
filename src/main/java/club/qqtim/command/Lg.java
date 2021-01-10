@@ -15,7 +15,7 @@ import java.util.concurrent.Callable;
 
 /**
  * @title: Lg
- * @Author lijie78
+ * @Author rezeros.github.io
  * @Date: 2020/12/7
  * @Version 1.0.0
  * https://www.leshenko.net/p/ugit/#k-render-graph

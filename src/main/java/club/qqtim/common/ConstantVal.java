@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author lijie78
+ * @author rezeros.github.io
  */
 public final class ConstantVal {
     public static final String HASH_ALGORITHM = "SHA-1";

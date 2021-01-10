@@ -1,7 +1,7 @@
 package club.qqtim.util;
 
 /**
- * @author lijie78
+ * @author rezeros.github.io
  */
 public final class ConvertUtil {
 

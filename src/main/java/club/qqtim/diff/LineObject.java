@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * @title: LineObject
- * @Author lijie78
+ * @Author rezeros.github.io
  * @Date: 2020/12/16
  * @Version 1.0.0
  */

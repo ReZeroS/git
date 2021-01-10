@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * @author lijie78
+ * @author rezeros.github.io
  */
 @Slf4j
 public final class FileUtil {
@@ -25,6 +25,14 @@ public final class FileUtil {
     private FileUtil() {
     }
 
+    private static final ThreadLocal<String> rootPathContext = new ThreadLocal<>();
+
+    public static void setRootPathContext(String path) {
+        rootPathContext.set(path);
+    }
+    public static void removeRootPathContext() {
+        rootPathContext.remove();
+    }
 
     public static void mkdir(String dirName) {
         boolean mkdir = new File(dirName).mkdir();
@@ -71,6 +79,10 @@ public final class FileUtil {
     }
 
     public static void createFile(byte[] fileContents, String fileName) {
+        final String rootPath = rootPathContext.get();
+        if (!Objects.isNull(rootPath)) {
+            fileName = Paths.get(rootPath).resolve(fileName).toString();
+        }
         File hashObject = new File(fileName);
         try {
             // first create the parent directory

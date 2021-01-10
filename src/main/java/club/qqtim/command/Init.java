@@ -7,7 +7,7 @@ import lombok.Data;
 import picocli.CommandLine;
 
 /**
- * @author lijie78
+ * @author rezeros.github.io
  * 初始化 .zit 目录
  */
 @Data

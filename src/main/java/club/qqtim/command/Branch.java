@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 /**
  * @title: Branch
- * @Author lijie78
+ * @Author rezeros.github.io
  * @Date: 2020/12/9
  * @Version 1.0.0
  */

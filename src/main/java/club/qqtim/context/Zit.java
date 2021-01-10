@@ -21,7 +21,7 @@ import club.qqtim.command.WriteTree;
 import picocli.CommandLine;
 
 /**
- * @author lijie78
+ * @author rezeros.github.io
  */
 @CommandLine.Command(name = "zit", subcommands = {
         Init.class,

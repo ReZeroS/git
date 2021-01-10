@@ -16,7 +16,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 /**
- * @author lijie78
+ * @author rezeros.github.io
  * If hash-object was for storing an individual file, then write-tree is for storing a whole directory.
  */
 @Data

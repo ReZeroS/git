@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static club.qqtim.util.FileUtil.emptyCurrentDir;
 
 /**
- * @author lijie78
+ * @author rezeros.github.io
  * extract the tree， opposite to write-tree
  */
 @Data

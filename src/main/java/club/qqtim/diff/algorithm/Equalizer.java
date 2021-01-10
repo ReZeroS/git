@@ -2,7 +2,7 @@ package club.qqtim.diff.algorithm;
 
 /**
  * @title: Equalizer
- * @Author lijie78
+ * @Author rezeros.github.io
  * @Date: 2020/12/26
  * @Version 1.0.0
  */
