@@ -67,8 +67,8 @@ public class Fetch implements Runnable {
         FileUtil.removeRootPathContext();
     }
 
-    public static void getRemoteRefs(String remotePath) {
-        getRemoteRefs(remotePath, ConstantVal.EMPTY);
+    public static List<RefObjValue> getRemoteRefs(String remotePath) {
+        return getRemoteRefs(remotePath, ConstantVal.EMPTY);
     }
 
     public static List<RefObjValue> getRemoteRefs(String remotePath, String prefix) {
