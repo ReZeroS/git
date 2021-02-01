@@ -5,12 +5,14 @@ import club.qqtim.context.ZitContext;
 import club.qqtim.data.RefObjValue;
 import club.qqtim.data.RefValue;
 import club.qqtim.util.FileUtil;
+import com.sun.org.apache.xml.internal.utils.PrefixResolver;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,7 +51,17 @@ public class Push implements Runnable{
 
     private void push(String remotePath, String refName) {
         final List<RefObjValue> remoteRefs = Fetch.getRemoteRefs(remotePath);
+        final RefObjValue remoteRef = remoteRefs.stream().filter(e -> e.getRefName().equals(refName)).findAny().orElse(null);
+
         final String localRef = ZitContext.getRef(refName).getValue();
+
+        // new branch or have common parent commit
+        if(!(Objects.isNull(remoteRef) || isAncestorOf(localRef, remoteRef.getValue()))){
+            log.error("force pushed fail");
+            throw new IllegalArgumentException("can be forced push");
+
+        }
+
 
         final List<String> knownRemoteRefs = remoteRefs.stream().map(RefObjValue::getValue).filter(ZitContext::objectExists).collect(Collectors.toList());
 
@@ -69,4 +81,21 @@ public class Push implements Runnable{
         FileUtil.removeRootPathContext();
 
     }
+
+
+
+    /**
+     * To prevent it from happening we're going to allow pushing only in two cases:
+     *
+     * The ref that we're pushing doesn't exist yet on the remote. It means that it's a new branch and there is no risk of overwriting other's work.
+     *
+     * If the remote ref does exist, it must point to a commit that is an ancestor of the pushed ref.
+     * This ancestry means that the local commit is based on the remote commit,
+     * which means that the remote commit not getting overwritten, since it's part of the history of the newly pushed commit.
+     */
+    private boolean isAncestorOf(String localRef, String maybeAncestor) {
+        return ZitContext.iteratorObjectsInCommits(Collections.singletonList(localRef)).contains(maybeAncestor);
+    }
+
+
 }
