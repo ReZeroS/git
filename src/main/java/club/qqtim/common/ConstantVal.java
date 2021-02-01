@@ -1,6 +1,5 @@
 package club.qqtim.common;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,4 +66,8 @@ public final class ConstantVal {
 
     public static final String DEFAULT_BRANCH = "main";
 
+    public static final String ZIT_DIR = ".zit";
+    public static final String OBJECTS_DIR = ZIT_DIR + "/objects";
+    public static final String REFS_DIR = "refs";
+    public static final String REFS_DIR_REAL = ZIT_DIR + "/" + REFS_DIR;
 }

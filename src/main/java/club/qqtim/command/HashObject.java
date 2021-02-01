@@ -1,7 +1,6 @@
 package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
-import club.qqtim.context.ZitContext;
 import club.qqtim.util.FileUtil;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -43,7 +42,7 @@ public class HashObject implements Callable<String> {
             byte[] fileContents = Files.toByteArray(file);
             return hashObject(fileContents, this.type);
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.toString());
         }
         return null;
     }
@@ -62,7 +61,7 @@ public class HashObject implements Callable<String> {
         String objectId = new BigInteger(1, digest).toString(16);
         log.info("objectId with {} type is {}", type, objectId);
         // create file with file name as object id
-        FileUtil.createFile(targetFileContents, ZitContext.OBJECTS_DIR + "/" + objectId);
+        FileUtil.createFile(targetFileContents, ConstantVal.OBJECTS_DIR + "/" + objectId);
         return objectId;
     }
 

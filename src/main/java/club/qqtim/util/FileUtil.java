@@ -90,7 +90,7 @@ public final class FileUtil {
             // then create the file
             Files.write(fileContents, hashObject);
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.toString());
         }
     }
 
@@ -98,7 +98,7 @@ public final class FileUtil {
         try {
             Files.createParentDirs(new File(path));
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.toString());
         }
     }
 
@@ -150,4 +150,15 @@ public final class FileUtil {
         }
         return new File(path).isFile();
     }
+
+
+
+    public static void copy(String from, String to) {
+        try {
+            java.nio.file.Files.copy(Paths.get(from), Paths.get(to));
+        } catch (IOException e) {
+            log.error(e.toString());
+        }
+    }
+
 }

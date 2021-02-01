@@ -42,7 +42,9 @@ public class MergeBase implements Runnable {
      * @return Compute common ancestor of a commit
      */
     public static String getMergeBase(String commitFirst, String commitSecond) {
-        final List<String> parentIdsOfFirstCommit = ZitContext.iteratorCommitsAndParents(Collections.singleton(commitFirst)).stream().distinct().collect(Collectors.toList());
+        final List<String> parentIdsOfFirstCommit = ZitContext
+                .iteratorCommitsAndParents(Collections.singleton(commitFirst))
+                .stream().distinct().collect(Collectors.toList());
 
         final List<String> parentIdsOfSecondCommit = ZitContext.iteratorCommitsAndParents(Collections.singleton(commitSecond));
 

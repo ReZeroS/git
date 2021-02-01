@@ -61,7 +61,7 @@ public class Diff implements Callable<String> {
                         return hashObject.call();
                     }));
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.toString());
         }
         return Collections.emptyMap();
     }

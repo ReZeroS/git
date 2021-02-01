@@ -81,7 +81,7 @@ public class DiffUtil {
 //            log.info(String.valueOf(pathNode));
             return myersDiff.buildDiff(pathNode, fromLineObjects, toLineObjects);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e.toString());
         }
 
         return Collections.emptyList();

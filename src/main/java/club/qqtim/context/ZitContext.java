@@ -33,16 +33,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ZitContext {
 
-    public static final String ZIT_DIR = ".zit";
-
-    public static final String OBJECTS_DIR = ZIT_DIR + "/objects";
-
-    public static final String REFS_DIR = "refs";
-    public static final String REFS_DIR_REAL = ZIT_DIR + "/" + REFS_DIR;
-
-
-
-
 
     public static List<String> iteratorCommitsAndParents(Collection<String> ids) {
         Deque<String> idsDeque = new LinkedList<>(ids);
@@ -120,18 +110,18 @@ public class ZitContext {
      * @return true if the object exist
      */
     public static boolean objectExists(String objectId) {
-        return FileUtil.isFile(Paths.get(OBJECTS_DIR).resolve(objectId).toString());
+        return FileUtil.isFile(Paths.get(ConstantVal.OBJECTS_DIR).resolve(objectId).toString());
     }
 
     public static void fetchObjectIfMissing(String objectId, String remoteDir) {
         if (objectExists(objectId)) {
             return;
         }
-        final Path remoteDirectory = Paths.get(remoteDir).resolve(OBJECTS_DIR).resolve(objectId);
+        final Path remoteDirectory = Paths.get(remoteDir).resolve(ConstantVal.OBJECTS_DIR).resolve(objectId);
         try {
-            Files.copy(remoteDirectory, Paths.get(OBJECTS_DIR).resolve(objectId));
+            Files.copy(remoteDirectory, Paths.get(ConstantVal.OBJECTS_DIR).resolve(objectId));
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.toString());
         }
     }
 
@@ -158,8 +148,8 @@ public class ZitContext {
         refs.add(ConstantVal.MERGE_HEAD);
 
         //get all file relative path from refs/ , like refs/* format
-        final Path refsPath = Paths.get(REFS_DIR_REAL);
-        final Path refsDir = Paths.get(REFS_DIR);
+        final Path refsPath = Paths.get(ConstantVal.REFS_DIR_REAL);
+        final Path refsDir = Paths.get(ConstantVal.REFS_DIR);
         final List<String> pathList;
         try {
             pathList = Files.walk(refsPath, Integer.MAX_VALUE)
@@ -205,13 +195,13 @@ public class ZitContext {
 
     private static RefObject getRefInternal(String ref, boolean dereference) {
         String value = null;
-        File file = new File(String.format("%s/%s", ZIT_DIR, ref));
+        File file = new File(String.format("%s/%s", ConstantVal.ZIT_DIR, ref));
         if (file.exists()) {
             try {
                 final CharSource charSource = com.google.common.io.Files.asCharSource(file, Charsets.UTF_8);
                 value = Objects.requireNonNull(charSource.readFirstLine()).trim();
             } catch (IOException e) {
-                log.error(e.getMessage());
+                log.error(e.toString());
             }
         }
         boolean symbolic = (value != null && value.startsWith("ref:"));
@@ -236,7 +226,7 @@ public class ZitContext {
         } else {
             value = refValue.getValue();
         }
-        FileUtil.createFile(value.getBytes(Charsets.UTF_8), String.format("%s/%s", ZIT_DIR, refName));
+        FileUtil.createFile(value.getBytes(Charsets.UTF_8), String.format("%s/%s", ConstantVal.ZIT_DIR, refName));
     }
 
     public static void deleteRef(String ref) {
@@ -247,7 +237,7 @@ public class ZitContext {
         final RefObject refInternal = getRefInternal(ref, dereference);
         if (Objects.nonNull(refInternal)) {
             final String refName = refInternal.getRefName();
-            FileUtil.deleteDir(String.format("%s/%s", ZIT_DIR, refName));
+            FileUtil.deleteDir(String.format("%s/%s", ConstantVal.ZIT_DIR, refName));
         }
     }
 
@@ -291,11 +281,11 @@ public class ZitContext {
     }
 
     private static void initRoot() {
-        FileUtil.mkdir(ZIT_DIR);
+        FileUtil.mkdir(ConstantVal.ZIT_DIR);
     }
 
     private static void initObjects() {
-        FileUtil.mkdir(OBJECTS_DIR);
+        FileUtil.mkdir(ConstantVal.OBJECTS_DIR);
     }
 
     public static byte[] getObject(String hash) {
@@ -303,23 +293,23 @@ public class ZitContext {
     }
 
     public static byte[] getObject(String hash, String type) {
-        String path = OBJECTS_DIR + "/" + hash;
+        String path = ConstantVal.OBJECTS_DIR + "/" + hash;
         log.debug("get the content of {} file", path);
         try {
             return FileUtil.getFileByteSource(path, type).read();
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.toString());
         }
         return null;
     }
 
     public static String getObjectAsString(String hash, String type) {
-        String path = OBJECTS_DIR + "/" + hash;
+        String path = ConstantVal.OBJECTS_DIR + "/" + hash;
         log.debug("get the content of {} file", path);
         try {
             return FileUtil.getFileAsString(path, type);
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error(e.toString());
         }
         return null;
     }
@@ -339,12 +329,17 @@ public class ZitContext {
     public static boolean isIgnored(String path) {
         return path != null &&
                 (
-                        path.startsWith(ZitContext.ZIT_DIR)
+                        path.startsWith(ConstantVal.ZIT_DIR)
                                 || path.startsWith(".zit")
                                 || path.startsWith("doc")
                                 || path.startsWith("target")
 
                 );
+    }
+
+    public static void pushObject(String objectId, String remotePath) {
+        remotePath += "/.zit";
+        FileUtil.copy(String.format(ConstantVal.OBJECTS_DIR + "/%s", objectId), String.format("%s/objects/%s", remotePath, objectId));
     }
 
 }
