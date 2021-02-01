@@ -40,7 +40,7 @@ public class ReadTree implements Runnable {
     }
 
 
-    private static List<ZitObject> iteratorTree(String treeId) {
+    public static List<ZitObject> iteratorTreeEntries(String treeId) {
         final String tree = ZitContext.getObjectAsString(treeId, "tree");
         assert tree != null;
         return Arrays.stream(tree.split(ConstantVal.NEW_LINE))
@@ -61,7 +61,7 @@ public class ReadTree implements Runnable {
         if (Objects.isNull(treeId)) {
             return Collections.emptyMap();
         }
-        final List<ZitObject> zitObjects = iteratorTree(treeId);
+        final List<ZitObject> zitObjects = iteratorTreeEntries(treeId);
         Map<String, String> map = new HashMap<>(16);
         zitObjects.forEach(zitObject -> {
             String path = basePath + zitObject.getName();

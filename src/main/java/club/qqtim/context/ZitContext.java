@@ -1,11 +1,13 @@
 package club.qqtim.context;
 
 import club.qqtim.command.Commit;
+import club.qqtim.command.ReadTree;
 import club.qqtim.common.ConstantVal;
 import club.qqtim.common.RegexConstantVal;
 import club.qqtim.data.CommitObject;
 import club.qqtim.data.RefObject;
 import club.qqtim.data.RefValue;
+import club.qqtim.data.ZitObject;
 import club.qqtim.util.FileUtil;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharSource;
@@ -70,6 +72,68 @@ public class ZitContext {
         return new ArrayList<>(resultSet);
     }
 
+
+    //https://www.leshenko.net/p/ugit/#fetch-remote-refs-objects
+
+    public static void iteratorObjectsInTree(String objectId, Set<String> visited, Collection<String> collections){
+        visited.add(objectId);
+        collections.add(objectId);
+        final List<ZitObject> zitObjects = ReadTree.iteratorTreeEntries(objectId);
+        for (ZitObject zitObject : zitObjects) {
+            if (!visited.contains(zitObject.getObjectId())) {
+                if (ConstantVal.TREE.equals(zitObject.getType())) {
+                    iteratorObjectsInTree(zitObject.getObjectId(), visited, collections);
+                } else {
+                    visited.add(zitObject.getObjectId());
+                    collections.add(zitObject.getObjectId());
+                }
+            }
+        }
+    }
+
+    //https://www.leshenko.net/p/ugit/#fetch-remote-refs-objects
+
+    public static List<String> iteratorObjectsInCommits(List<String> objectIds) {
+        List<String> result = new ArrayList<>();
+        final Set<String> visited = new HashSet<>();
+
+        final List<String> commitIds = iteratorCommitsAndParents(objectIds);
+        for (String commitId : commitIds) {
+            // todo yield commitid
+            result.add(commitId);
+            final CommitObject commit = Commit.getCommit(commitId);
+            if (!visited.contains(commit.getTree())) {
+                //todo yield from iter_objects_in_tree (commit.tree)
+                List<String> traverseTree = new ArrayList<>();
+                iteratorObjectsInTree(commit.getTree(), visited, traverseTree);
+                result.addAll(traverseTree);
+            }
+        }
+        return result;
+    }
+
+
+
+
+    /**
+     * @param objectId  object id
+     * @return true if the object exist
+     */
+    public static boolean objectExists(String objectId) {
+        return FileUtil.isFile(Paths.get(OBJECTS_DIR).resolve(objectId).toString());
+    }
+
+    public static void fetchObjectIfMissing(String objectId, String remoteDir) {
+        if (objectExists(objectId)) {
+            return;
+        }
+        final Path remoteDirectory = Paths.get(remoteDir).resolve(OBJECTS_DIR).resolve(objectId);
+        try {
+            Files.copy(remoteDirectory, Paths.get(OBJECTS_DIR).resolve(objectId));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
 
 
     public static List<RefObject> iteratorRefs() {

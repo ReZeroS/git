@@ -141,4 +141,13 @@ public final class FileUtil {
     }
 
 
+    public static boolean isFile(String path) {
+        final String rootPath = rootPathContext.get();
+        if (!Objects.isNull(rootPath)) {
+            String fileName = Paths.get(rootPath).resolve(path).toString();
+            File file = new File(fileName);
+            return file.isFile();
+        }
+        return new File(path).isFile();
+    }
 }

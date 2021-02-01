@@ -47,14 +47,22 @@ public class Fetch implements Runnable {
     public static void fetch(String remotePath) {
         log.debug("Will fetch the following refs:");
         FileUtil.setRootPathContext(remotePath);
-        final List<RefObjValue> remoteRefs = getRemoteRefs(remotePath, ConstantVal.HEADS_PATH);
-        remoteRefs.forEach(remoteRef -> {
-            final String remoteName = remoteRef.getRefName();
-            final Path refName = Paths.get(REMOTE_REFS_BASE).relativize(Paths.get(remoteName));
 
-            ZitContext.updateRef(Paths.get(LOCAL_REFS_BASE).resolve(refName).toString(),
-                    new RefValue(false, remoteRef.getValue()));
-        });
+        {
+            final List<RefObjValue> remoteRefs = getRemoteRefs(remotePath, ConstantVal.HEADS_PATH);
+
+            final List<String> objectIds = ZitContext.iteratorObjectsInCommits(remoteRefs.stream()
+                    .map(RefObjValue::getValue).distinct().collect(Collectors.toList()));
+            objectIds.forEach(objectId -> ZitContext.fetchObjectIfMissing(objectId, remotePath));
+
+            remoteRefs.forEach(remoteRef -> {
+                final String remoteName = remoteRef.getRefName();
+                final Path refName = Paths.get(REMOTE_REFS_BASE).relativize(Paths.get(remoteName));
+
+                ZitContext.updateRef(Paths.get(LOCAL_REFS_BASE).resolve(refName).toString(),
+                        new RefValue(false, remoteRef.getValue()));
+            });
+        }
 
         FileUtil.removeRootPathContext();
     }
