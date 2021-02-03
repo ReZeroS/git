@@ -11,7 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -34,21 +37,46 @@ public class Add implements Runnable{
 
     @Override
     public void run() {
-        add(files);
+        addFiles(files);
     }
 
-    private void add(List<String> files) {
+    private void addFiles(List<String> files) {
         final String indexContent = FileUtil.getFileAsString(ConstantVal.INDEX, ConstantVal.NONE);
         final JsonElement jsonElement = new Gson().fromJson(indexContent, JsonElement.class);
         final JsonObject asJsonObject = jsonElement.getAsJsonObject();
 
         files.forEach(file  -> {
-            HashObject hashObject = new HashObject();
-            hashObject.setFile(new File(file));
-            hashObject.setType(ConstantVal.BLOB);
-            final String objectId = hashObject.call();
-            asJsonObject.addProperty(file, objectId);
+            final boolean isFile = !FileUtil.isFile(file);
+            if (isFile) {
+                addFile(asJsonObject, file);
+            } else { // is directory
+                addDirectory(asJsonObject, file);
+            }
         });
         FileUtil.createFile(asJsonObject.toString(), ConstantVal.INDEX);
     }
+
+    private void addFile(JsonObject asJsonObject, String file) {
+        HashObject hashObject = new HashObject();
+        hashObject.setFile(new File(file));
+        hashObject.setType(ConstantVal.BLOB);
+        final String objectId = hashObject.call();
+        asJsonObject.addProperty(file, objectId);
+    }
+
+
+    private void addDirectory(JsonObject asJsonObject, String file) {
+        try {
+            Files.walk(Paths.get(file), Integer.MAX_VALUE)
+                    .filter(Files::isRegularFile)
+                    .forEach(regularFile -> addFile(asJsonObject, regularFile.toString()));
+        } catch (IOException e) {
+            log.error(e.toString());
+        }
+    }
+
+
+
+
+
 }
