@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
@@ -78,6 +79,10 @@ public final class FileUtil {
         }
     }
 
+    public static void createFile(String fileContents, String fileName) {
+        createFile(fileContents.getBytes(StandardCharsets.UTF_8), fileName);
+    }
+
     public static void createFile(byte[] fileContents, String fileName) {
         final String rootPath = rootPathContext.get();
         if (!Objects.isNull(rootPath)) {
@@ -103,8 +108,13 @@ public final class FileUtil {
     }
 
 
-    public static String getFileAsString(String path, String type) throws IOException {
-        return getFileByteSource(path, type).asCharSource(Charsets.UTF_8).read();
+    public static String getFileAsString(String path, String type) {
+        try {
+            return getFileByteSource(path, type).asCharSource(Charsets.UTF_8).read();
+        } catch (IOException e) {
+            log.error(e.toString());
+        }
+        return null;
     }
 
     public static ByteSource getFileByteSource(String path, String type) throws IOException {

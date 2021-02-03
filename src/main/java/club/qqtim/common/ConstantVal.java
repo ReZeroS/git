@@ -70,4 +70,7 @@ public final class ConstantVal {
     public static final String OBJECTS_DIR = ZIT_DIR + "/objects";
     public static final String REFS_DIR = "refs";
     public static final String REFS_DIR_REAL = ZIT_DIR + "/" + REFS_DIR;
+
+    public static final String INDEX = ZIT_DIR + "/index";
+
 }
