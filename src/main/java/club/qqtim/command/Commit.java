@@ -55,7 +55,6 @@ public class Commit implements Callable<String> {
     public String call() {
         // calc the commit message
         WriteTree writeTree = new WriteTree();
-        writeTree.setPath(ConstantVal.BASE_PATH);
         String commitMessage = String.format("%s %s\n", ConstantVal.TREE, writeTree.call());
 
         String headId = ZitContext.getRef(ConstantVal.HEAD).getValue();
@@ -70,8 +69,7 @@ public class Commit implements Callable<String> {
 
         commitMessage += String.format("\n%s\n", message);
 
-        HashObject hashObject = new HashObject();
-        final String commitId = hashObject.hashObject(commitMessage.getBytes(Charsets.UTF_8), ConstantVal.COMMIT);
+        final String commitId = HashObject.hashObject(commitMessage.getBytes(Charsets.UTF_8), ConstantVal.COMMIT);
         ZitContext.updateRef(ConstantVal.HEAD, new RefValue(false, commitId));
         return commitId;
     }

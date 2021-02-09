@@ -4,7 +4,7 @@
 
 原作者地址: [https://www.leshenko.net/p/ugit](https://www.leshenko.net/p/ugit)
 
-对 `git` 挺感兴趣，就照着实现了一个java版本的，多谢作者大佬写出这样的文章系列能让小弟我也体验一把。
+对 `git` 挺感兴趣，就照着实现了一个java版本的，感谢原作者。
 
 ## TODO
 

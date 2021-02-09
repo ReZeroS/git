@@ -47,7 +47,7 @@ public class HashObject implements Callable<String> {
         return null;
     }
 
-    protected String hashObject(byte[] fileContents, String type) {
+    protected static String hashObject(byte[] fileContents, String type) {
         char nullChar = 0;
         byte[] targetFileContents = Bytes.concat(type.getBytes(Charsets.UTF_8), Chars.toByteArray(nullChar), fileContents);
         byte[] digest = new byte[0];
@@ -64,6 +64,7 @@ public class HashObject implements Callable<String> {
         FileUtil.createFile(targetFileContents, ConstantVal.OBJECTS_DIR + "/" + objectId);
         return objectId;
     }
+
 
 
 }

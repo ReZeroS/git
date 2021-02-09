@@ -1,9 +1,13 @@
 package club.qqtim.command;
 
 
+import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
+import club.qqtim.data.ZitObject;
+import club.qqtim.util.FileUtil;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
+import com.google.gson.Gson;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -11,7 +15,9 @@ import picocli.CommandLine;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
@@ -24,70 +30,57 @@ import java.util.stream.Collectors;
 @CommandLine.Command(name = "write-tree")
 public class WriteTree implements Callable<String> {
 
-    @CommandLine.Parameters(index = "0", defaultValue = ".")
-    private String path;
-
     @Override
     public String call() {
-        return writeTree(path);
+        return writeTree();
     }
-
 
     /**
-     *
-     * @param dirPath only accept directory path as param
      * @return tree Id
-     * @throws Exception
      */
-    private String writeTree(String dirPath) {
-        File file = new File(dirPath);
-        String[] pathList = file.list();
+    private String writeTree() {
 
-        // if dirPath is not a directory then return null
-        // if dirPath is an empty directory then return array with length equal zero
-        if (pathList == null || pathList.length == 0) {
-            return null;
-        }
+        // init the indexAsTree to visual tree
+        final String indexContent = FileUtil.getFileAsString(ConstantVal.INDEX, ConstantVal.NONE);
+        Map<String, String> indexItems = new Gson().fromJson(indexContent, Map.class);
+        Map<String, Object> indexAsTree = new HashMap<>();
+        for (Map.Entry<String, String> pathObjectId : indexItems.entrySet()) {
+            String path = pathObjectId.getKey();
+            String objectId = pathObjectId.getValue();
+            List<String> pathAndFile = Arrays.asList(path.split("/"));
+            List<String> dirPaths = pathAndFile.subList(0, pathAndFile.size() - 1);
+            String fileName = pathAndFile.get(pathAndFile.size() - 1);
 
-        // only traverse the filter path
-        final List<String> filterPathList = Arrays.stream(pathList)
-                .filter(ZitContext::isNotIgnored)
-                .map(e -> String.format("%s/%s", dirPath, e)).collect(Collectors.toList());
-
-        List<String> treeNodes = new ArrayList<>();
-
-        String type = null;
-        String objectId = null;
-        for (String path : filterPathList) {
-            File currentFile = new File(path);
-            if (currentFile.isFile()) {
-                type = "blob";
-                HashObject hashObject = new HashObject();
-                hashObject.setFile(currentFile);
-                hashObject.setType(type);
-                objectId = hashObject.call();
-            } else if (currentFile.isDirectory()) {
-                type = "tree";
-                objectId = writeTree(path);
+            Map<String, Object> current = indexAsTree;
+            for (String dirPath : dirPaths) {
+                current = (Map<String, Object>) current.computeIfAbsent(dirPath, e -> new HashMap<>());
             }
-            // above key: ensure will write object id
-            // for wrong example: empty directory
-            if (objectId != null) {
-                treeNodes.add(String.format("%s %s %s\n", type, objectId, currentFile.getName()));
-            }
+            current.put(fileName, objectId);
         }
 
-        // path got all dir are empty directory, see the above key
-        if (treeNodes.isEmpty()) {
-            return null;
-        }
-        HashObject hashObject = new HashObject();
-        // file with content: every object in one line
-        final String fileContent = Joiner.on("").join(treeNodes);
-        // return tree id
-        return hashObject.hashObject(fileContent.getBytes(Charsets.UTF_8), "tree");
+        return writeTreeRecursive(indexAsTree);
     }
 
+    private String writeTreeRecursive(Map<String, Object> treeDict) {
+        List<ZitObject> zitObjects = new ArrayList<>();
+        for (Map.Entry<String, Object> keyVal : treeDict.entrySet()) {
+            String type, objectId;
+            String name = keyVal.getKey();
+            Object value = keyVal.getValue();
+            if (value instanceof Map) {
+                type = ConstantVal.TREE;
+                objectId = writeTreeRecursive((Map<String, Object>) value);
+            } else {
+                type = ConstantVal.BLOB;
+                objectId = (String) value;
+            }
+            zitObjects.add(new ZitObject(type, objectId, name));
+        }
+        String fileContent = zitObjects.stream().sorted()
+                .map(e -> String.format("%s %s %s\n", e.getType(), e.getObjectId(), e.getName()))
+                .collect(Collectors.joining());
+        return HashObject.hashObject(fileContent.getBytes(Charsets.UTF_8), ConstantVal.TREE);
+    }
 
 
 }

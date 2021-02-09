@@ -306,12 +306,7 @@ public class ZitContext {
     public static String getObjectAsString(String hash, String type) {
         String path = ConstantVal.OBJECTS_DIR + "/" + hash;
         log.debug("get the content of {} file", path);
-        try {
-            return FileUtil.getFileAsString(path, type);
-        } catch (IOException e) {
-            log.error(e.toString());
-        }
-        return null;
+        return FileUtil.getFileAsString(path, type);
     }
 
     /**
