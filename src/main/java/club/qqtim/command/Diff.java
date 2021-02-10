@@ -2,9 +2,9 @@ package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
-import club.qqtim.converter.IdConverter;
-import club.qqtim.data.CommitObject;
 import club.qqtim.diff.DiffUtil;
+import club.qqtim.util.FileUtil;
+import com.google.gson.Gson;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -34,15 +34,38 @@ import java.util.stream.Collectors;
 @CommandLine.Command(name = "diff")
 public class Diff implements Callable<String> {
 
-    @CommandLine.Parameters(index = "0", defaultValue = ConstantVal.HEAD_ALIAS, converter = IdConverter.class)
-    private String id;
+    @CommandLine.Option(names = {"--cached"})
+    private boolean cached = false;
+
+
+    @CommandLine.Option(names = {"--commit"})
+    private String commit;
 
 
     @Override
     public String call() {
-        final CommitObject commit = Commit.getCommit(id);
-        final String diffChanges = DiffUtil.diffTrees(
-                ReadTree.getTree(commit.getTree()), getWorkingTree());
+        String objectId;
+        Map<String, String> treeFrom = new HashMap<>(), treeTo;
+        if (this.commit != null) {
+            objectId = ZitContext.getId(this.commit);
+            treeFrom = ReadTree.getTree(Commit.getCommit(objectId).getTree());
+        }
+        final String indexContent = FileUtil.getFileAsString(ConstantVal.INDEX, ConstantVal.NONE);
+
+        if (cached) {
+            treeTo = new Gson().fromJson(indexContent, Map.class);
+            if (this.commit == null) {
+                objectId = ZitContext.getId(ConstantVal.HEAD_ALIAS);
+                treeFrom = ReadTree.getTree(Commit.getCommit(objectId).getTree());
+            }
+        } else {
+            treeTo = Diff.getWorkingTree();
+            if (this.commit == null) {
+                treeFrom = new Gson().fromJson(indexContent, Map.class);
+            }
+        }
+
+        final String diffChanges = DiffUtil.diffTrees(treeFrom, treeTo);
         log.info(diffChanges);
         return diffChanges;
     }
