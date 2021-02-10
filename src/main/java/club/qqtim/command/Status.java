@@ -2,14 +2,15 @@ package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
-import club.qqtim.data.CommitObject;
 import club.qqtim.diff.DiffUtil;
 import club.qqtim.diff.SimplyChange;
+import club.qqtim.util.FileUtil;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
-import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -39,11 +40,21 @@ public class Status implements Runnable {
             log.info("Merging with {}", mergeHeadId.substring(0, 11));
         }
 
-        log.info("\nChanges to be committed:\n");
 
+
+        final String indexContent = FileUtil.getFileAsString(ConstantVal.INDEX, ConstantVal.NONE);
+        Map<String, String> indexItems = new Gson().fromJson(indexContent, Map.class);
+
+
+        log.info("\nChanges to be committed:\n");
         final String headTree = Commit.getCommit(headId).getTree();
-        final List<SimplyChange> simplyChanges = DiffUtil.iteratorChangedFiles(ReadTree.getTree(headTree), Diff.getWorkingTree());
-        simplyChanges.forEach(simplyChange -> log.info(simplyChange.toString()));
+        final List<SimplyChange> toBeCommitted = DiffUtil.iteratorChangedFiles(ReadTree.getTree(headTree), indexItems);
+        toBeCommitted.forEach(simplyChange -> log.info(simplyChange.toString()));
+
+
+        log.info("\nChanges not staged for commit:\n");
+        final List<SimplyChange> notStaged = DiffUtil.iteratorChangedFiles(indexItems, Diff.getWorkingTree());
+        notStaged.forEach(simplyChange -> log.info(simplyChange.toString()));
 
     }
 }
