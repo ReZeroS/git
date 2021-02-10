@@ -39,8 +39,8 @@ public class Checkout implements Runnable {
     private void checkout(String name) {
         String id = ZitContext.getId(name);
         final CommitObject commit = Commit.getCommit(id);
-        final ReadTree readTree = new ReadTree();
-        readTree.readTree(commit.getTree());
+        ReadTree.readTree(commit.getTree(), true);
+
         RefValue refValue;
         if (Branch.existBranch(name)) {
             refValue = new RefValue(true, String.format(ConstantVal.BASE_REFS_HEADS_PATH, name));

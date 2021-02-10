@@ -47,7 +47,10 @@ public class HashObject implements Callable<String> {
         return null;
     }
 
-    protected static String hashObject(byte[] fileContents, String type) {
+    public static String hashObject(byte[] fileContents) {
+        return hashObject(fileContents, ConstantVal.BLOB);
+    }
+    public static String hashObject(byte[] fileContents, String type) {
         char nullChar = 0;
         byte[] targetFileContents = Bytes.concat(type.getBytes(Charsets.UTF_8), Chars.toByteArray(nullChar), fileContents);
         byte[] digest = new byte[0];

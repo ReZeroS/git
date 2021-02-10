@@ -1,5 +1,6 @@
 package club.qqtim.diff;
 
+import club.qqtim.command.HashObject;
 import club.qqtim.diff.algorithm.MyersDiff;
 import club.qqtim.diff.algorithm.PathNode;
 import club.qqtim.common.ConstantVal;
@@ -7,6 +8,7 @@ import club.qqtim.context.ZitContext;
 import com.google.common.base.Charsets;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -172,8 +174,9 @@ public class DiffUtil {
         final Map<String, List<String>> comparedTrees = compareTrees(baseTree, headTree, otherTree);
         Map<String, String> mergedTrees = new HashMap<>();
         comparedTrees.forEach((path, trees) -> {
-            final String mergeBlobs = mergeBlobs(trees.get(0), trees.get(1), trees.get(2));
-            mergedTrees.put(path, mergeBlobs);
+            String mergeBlobs = mergeBlobs(trees.get(0), trees.get(1), trees.get(2));
+            final String objectId = HashObject.hashObject(mergeBlobs.getBytes(StandardCharsets.UTF_8));
+            mergedTrees.put(path, objectId);
         });
         return mergedTrees;
     }

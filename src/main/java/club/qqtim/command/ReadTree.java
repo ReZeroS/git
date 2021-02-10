@@ -5,6 +5,9 @@ import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
 import club.qqtim.data.ZitObject;
 import club.qqtim.util.FileUtil;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -75,15 +78,36 @@ public class ReadTree implements Runnable {
         return map;
     }
 
+
+
     public static void readTree(String id){
-        final String hash = ZitContext.getId(id);
+        readTree(id, false);
+    }
+
+
+    public static void readTree(String id, boolean updateWorking){
+
+        Map<String, String> tree = getTree(id);
+        String fileContent = new Gson().toJson(tree);
+        FileUtil.createFile(fileContent, ConstantVal.INDEX);
+
+        if (updateWorking) {
+            checkoutIndex(tree);
+        }
+
+    }
+
+    public static void checkoutIndex(Map<String, String> index) {
         emptyCurrentDir();
-        final Map<String, String> treeMap = getTree(hash, ConstantVal.BASE_PATH);
-        treeMap.forEach((path, objectId) -> {
+
+        for (Map.Entry<String, String> pathObjectId : index.entrySet()) {
+            String path = pathObjectId.getKey();
+            String objectId = pathObjectId.getValue();
             FileUtil.createParentDirs(path);
             final byte[] objectBytes = ZitContext.getObject(objectId);
             FileUtil.createFile(objectBytes, path);
-        });
+        }
+
     }
 
 
