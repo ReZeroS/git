@@ -31,8 +31,9 @@ public class Status implements Runnable {
         if (Objects.nonNull(branchName)) {
             log.info("On branch {}", branchName);
         } else {
-            assert headId != null;
-            log.info("HEAD detached at {}", headId.substring(0, 11));
+            if (headId != null) {
+                log.info("HEAD detached at {}", headId.substring(0, 11));
+            }
         }
 
         final String mergeHeadId = ZitContext.getRef(ConstantVal.MERGE_HEAD).getValue();
@@ -46,10 +47,12 @@ public class Status implements Runnable {
         Map<String, String> indexItems = new Gson().fromJson(indexContent, Map.class);
 
 
-        log.info("\nChanges to be committed:\n");
-        final String headTree = Commit.getCommit(headId).getTree();
-        final List<SimplyChange> toBeCommitted = DiffUtil.iteratorChangedFiles(ReadTree.getTree(headTree), indexItems);
-        toBeCommitted.forEach(simplyChange -> log.info(simplyChange.toString()));
+        if (headId != null) {
+            log.info("\nChanges to be committed:\n");
+            final String headTree = Commit.getCommit(headId).getTree();
+            final List<SimplyChange> toBeCommitted = DiffUtil.iteratorChangedFiles(ReadTree.getTree(headTree), indexItems);
+            toBeCommitted.forEach(simplyChange -> log.info(simplyChange.toString()));
+        }
 
 
         log.info("\nChanges not staged for commit:\n");

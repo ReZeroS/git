@@ -1,5 +1,6 @@
 package club.qqtim.data;
 
+import com.google.common.collect.Comparators;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
@@ -13,7 +14,7 @@ import lombok.ToString;
 @Data
 @ToString
 @AllArgsConstructor
-public class ZitObject {
+public class ZitObject implements Comparable<ZitObject> {
 
     private String type;
 
@@ -21,4 +22,9 @@ public class ZitObject {
 
     private String name;
 
+
+    @Override
+    public int compareTo(ZitObject o) {
+        return Integer.compare(this.hashCode(), o.hashCode());
+    }
 }
