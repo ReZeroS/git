@@ -35,11 +35,12 @@ public class Branch implements Runnable{
 
 
     /**
-     * Pay attention, only you create commit at branch, the branch will generate at real
+     * Pay attention, only you create a commit at branch, the branch will generate at real
      * so if you execute `zit init`, then `zit branch` immediately will get nothing, this is not a bug.
      */
     @Override
     public void run() {
+        // none name for readable command
         if(ConstantVal.NONE.equals(name)) {
             final String currentBranch = ZitContext.getBranchName();
             final List<String> branchNames = iteratorBranchNames();
@@ -47,6 +48,7 @@ public class Branch implements Runnable{
                     log.info("{} {}", branchName.equals(currentBranch) ? ConstantVal.STAR : ConstantVal.EMPTY, branchName)
             );
         } else {
+            // got name for branch will be created base on the commit point
             createBranch(name, startPoint);
             log.info("created branch {} at {}", name, startPoint.substring(0, 11));
         }

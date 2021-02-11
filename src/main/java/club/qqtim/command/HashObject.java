@@ -50,6 +50,11 @@ public class HashObject implements Callable<String> {
     public static String hashObject(byte[] fileContents) {
         return hashObject(fileContents, ConstantVal.BLOB);
     }
+
+    /**
+     * get hash of file content and create it with type describe.
+     * type could be: blob, tree, commit
+     */
     public static String hashObject(byte[] fileContents, String type) {
         char nullChar = 0;
         byte[] targetFileContents = Bytes.concat(type.getBytes(Charsets.UTF_8), Chars.toByteArray(nullChar), fileContents);

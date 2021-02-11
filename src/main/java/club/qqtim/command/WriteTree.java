@@ -36,13 +36,27 @@ public class WriteTree implements Callable<String> {
     }
 
     /**
+     * init the indexAsTree to visual tree
      * @return tree Id
      */
     private String writeTree() {
-
-        // init the indexAsTree to visual tree
+        // read the index dict
         final String indexContent = FileUtil.getFileAsString(ConstantVal.INDEX, ConstantVal.NONE);
         Map<String, String> indexItems = new Gson().fromJson(indexContent, Map.class);
+
+
+        /* construct the tree map called indexAsTree like the below
+          {
+            java: {                      =>   val is map     =>  tree
+               com: {                    =>   val is map     =>  tree
+                   file1: objectId       =>   val is string  =>  object
+                   club: {               =>   val is map     =>  tree
+                       file2: objectId   =>   val is string  =>  object
+                   }
+               }
+          }
+
+         */
         Map<String, Object> indexAsTree = new HashMap<>();
         for (Map.Entry<String, String> pathObjectId : indexItems.entrySet()) {
             String path = pathObjectId.getKey();
@@ -58,9 +72,13 @@ public class WriteTree implements Callable<String> {
             current.put(fileName, objectId);
         }
 
+        // write objects into zit repository with the reference of above tree
         return writeTreeRecursive(indexAsTree);
     }
 
+    /**
+     * this is an easy dfs for writing objects and trees
+     */
     private String writeTreeRecursive(Map<String, Object> treeDict) {
         List<ZitObject> zitObjects = new ArrayList<>();
         for (Map.Entry<String, Object> keyVal : treeDict.entrySet()) {
@@ -69,6 +87,7 @@ public class WriteTree implements Callable<String> {
             Object value = keyVal.getValue();
             if (value instanceof Map) {
                 type = ConstantVal.TREE;
+                // get tree id
                 objectId = writeTreeRecursive((Map<String, Object>) value);
             } else {
                 type = ConstantVal.BLOB;

@@ -4,6 +4,7 @@ import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteSource;
+import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 import com.google.common.primitives.Chars;
 import lombok.extern.slf4j.Slf4j;
@@ -171,4 +172,15 @@ public final class FileUtil {
         }
     }
 
+    public static String readFileFirstLine(File file) {
+        String value;
+        try {
+            final CharSource charSource = Files.asCharSource(file, Charsets.UTF_8);
+            value = Objects.requireNonNull(charSource.readFirstLine()).trim();
+        } catch (IOException e) {
+            log.error(e.toString());
+            return null;
+        }
+        return value;
+    }
 }

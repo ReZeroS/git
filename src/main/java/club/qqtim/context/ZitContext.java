@@ -10,7 +10,6 @@ import club.qqtim.data.RefValue;
 import club.qqtim.data.ZitObject;
 import club.qqtim.util.FileUtil;
 import com.google.common.base.Charsets;
-import com.google.common.io.CharSource;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -194,19 +193,25 @@ public class ZitContext {
         return getRefInternal(ref, true);
     }
 
+    /**
+     * dereference is a symbol to determine whether deference the chain
+     * or just return the ref directly
+     **/
     private static RefObject getRefInternal(String ref, boolean dereference) {
         String value = null;
         File file = new File(String.format("%s/%s", ConstantVal.ZIT_DIR, ref));
+        // read the file first line
         if (file.exists()) {
-            try {
-                final CharSource charSource = com.google.common.io.Files.asCharSource(file, Charsets.UTF_8);
-                value = Objects.requireNonNull(charSource.readFirstLine()).trim();
-            } catch (IOException e) {
-                log.error(e.toString());
+            value = FileUtil.readFileFirstLine(file);
+            if (value == null) {
+                return null;
             }
         }
+        // determine whether it is an direct hash or reference symbolic
         boolean symbolic = (value != null && value.startsWith("ref:"));
         if (symbolic){
+            // get the reference key like ··ref: ref/heads/main··
+            // pick up the `ref/heads/main`
             value = value.split(":", 2)[1].trim();
             if (dereference) {
                 return getRefInternal(value);
@@ -220,7 +225,7 @@ public class ZitContext {
     }
 
     public static void updateRef(String ref, RefValue refValue, boolean dereference) {
-        final String refName = getRefInternal(ref, dereference).getRefName();
+        final String refName = Objects.requireNonNull(getRefInternal(ref, dereference)).getRefName();
         String value;
         if (refValue.getSymbolic()) {
             value = String.format("ref: %s", refValue.getValue());
@@ -264,14 +269,17 @@ public class ZitContext {
         return null;
     }
 
+    /**
+     * get current branch name by read the head pointer ref
+     */
     public static String getBranchName(){
         final RefValue head = getRef(ConstantVal.HEAD, false);
         if (!head.getSymbolic()) {
             return null;
         }
         final String headPath = head.getValue();
-        if (headPath.startsWith("refs/heads")) {
-            return Paths.get("refs/heads").relativize(Paths.get(headPath)).toString();
+        if (headPath.startsWith(ConstantVal.HEADS_PATH)) {
+            return Paths.get(ConstantVal.HEADS_PATH).relativize(Paths.get(headPath)).toString();
         }
         return null;
     }

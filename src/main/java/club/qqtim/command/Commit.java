@@ -29,6 +29,39 @@ public class Commit implements Callable<String> {
     @CommandLine.Parameters(index = "0")
     private String message;
 
+
+    @Override
+    public String call() {
+        return commit();
+    }
+
+    private String commit() {
+        // calc the commit message
+        WriteTree writeTree = new WriteTree();
+        String commitMessage = String.format("%s %s\n", ConstantVal.TREE, writeTree.call());
+
+        // set last commit as parent commit
+        String headId = ZitContext.getRef(ConstantVal.HEAD).getValue();
+        if (headId != null) {
+            commitMessage += String.format("%s %s\n", ConstantVal.PARENT, headId);
+        }
+
+        String mergedHead = ZitContext.getRef(ConstantVal.MERGE_HEAD).getValue();
+        if (mergedHead != null) {
+            commitMessage += String.format("%s %s\n", ConstantVal.PARENT, mergedHead);
+            ZitContext.deleteRef(ConstantVal.MERGE_HEAD, false);
+        }
+
+        // write commit message
+        commitMessage += String.format("\n%s\n", message);
+
+        // write commit object and return commit id
+        final String commitId = HashObject.hashObject(commitMessage.getBytes(Charsets.UTF_8), ConstantVal.COMMIT);
+        ZitContext.updateRef(ConstantVal.HEAD, new RefValue(false, commitId));
+        return commitId;
+    }
+
+
     public static CommitObject getCommit(String id) {
         final byte[] commit = ZitContext.getObject(id, ConstantVal.COMMIT);
         assert commit != null;
@@ -49,28 +82,5 @@ public class Commit implements Callable<String> {
         commitObject.setParents(parents);
         commitObject.setMessage(commitContent);
         return commitObject;
-    }
-
-    @Override
-    public String call() {
-        // calc the commit message
-        WriteTree writeTree = new WriteTree();
-        String commitMessage = String.format("%s %s\n", ConstantVal.TREE, writeTree.call());
-
-        String headId = ZitContext.getRef(ConstantVal.HEAD).getValue();
-        if (headId != null) {
-            commitMessage += String.format("%s %s\n", ConstantVal.PARENT, headId);
-        }
-        String mergedHead = ZitContext.getRef(ConstantVal.MERGE_HEAD).getValue();
-        if (mergedHead != null) {
-            commitMessage += String.format("%s %s\n", ConstantVal.PARENT, mergedHead);
-            ZitContext.deleteRef(ConstantVal.MERGE_HEAD, false);
-        }
-
-        commitMessage += String.format("\n%s\n", message);
-
-        final String commitId = HashObject.hashObject(commitMessage.getBytes(Charsets.UTF_8), ConstantVal.COMMIT);
-        ZitContext.updateRef(ConstantVal.HEAD, new RefValue(false, commitId));
-        return commitId;
     }
 }
