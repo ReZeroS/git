@@ -6,8 +6,6 @@ import club.qqtim.context.ZitContext;
 import club.qqtim.data.ZitObject;
 import club.qqtim.util.FileUtil;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;

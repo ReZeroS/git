@@ -1,18 +1,14 @@
 package club.qqtim.command;
 
 import club.qqtim.common.ConstantVal;
-import club.qqtim.context.ZitContext;
 import club.qqtim.util.FileUtil;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import jdk.nashorn.internal.parser.JSONParser;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -30,7 +26,7 @@ import java.util.List;
 public class Add implements Runnable{
 
 
-    @CommandLine.Parameters(paramLabel = "FILE", description = "one ore more files to archive")
+    @CommandLine.Parameters(paramLabel = "FILE", description = "one ore more files to archive", defaultValue = ".")
     List<String> files;
 
 
@@ -40,13 +36,19 @@ public class Add implements Runnable{
         addFiles(files);
     }
 
+    /**
+     * update the index file content: if new file then add while old file will be updated
+     * content is a big easy (key val directly) json like this:
+     * {
+     *    ".\\doc\\OptionsAndParameters2.png": "f4a36c21ce890b0fa10067c10dab416e9b71a13e"
+     * }
+     */
     private void addFiles(List<String> files) {
         final String indexContent = FileUtil.getFileAsString(ConstantVal.INDEX, ConstantVal.NONE);
-        final JsonElement jsonElement = new Gson().fromJson(indexContent, JsonElement.class);
-        final JsonObject asJsonObject = jsonElement.getAsJsonObject();
+        final JsonObject asJsonObject = new Gson().fromJson(indexContent, JsonObject.class);
 
         files.forEach(file  -> {
-            final boolean isFile = !FileUtil.isFile(file);
+            final boolean isFile = FileUtil.isFile(file);
             if (isFile) {
                 addFile(asJsonObject, file);
             } else { // is directory

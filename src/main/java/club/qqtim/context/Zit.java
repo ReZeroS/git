@@ -1,17 +1,20 @@
 package club.qqtim.context;
 
 
+import club.qqtim.command.Add;
 import club.qqtim.command.Branch;
 import club.qqtim.command.CatFile;
 import club.qqtim.command.Checkout;
 import club.qqtim.command.Commit;
 import club.qqtim.command.Diff;
+import club.qqtim.command.Fetch;
 import club.qqtim.command.HashObject;
 import club.qqtim.command.Init;
 import club.qqtim.command.Lg;
 import club.qqtim.command.Log;
 import club.qqtim.command.Merge;
 import club.qqtim.command.MergeBase;
+import club.qqtim.command.Push;
 import club.qqtim.command.ReadTree;
 import club.qqtim.command.Reset;
 import club.qqtim.command.Show;
@@ -40,7 +43,10 @@ import picocli.CommandLine;
         Show.class,
         Diff.class,
         Merge.class,
-        MergeBase.class
+        MergeBase.class,
+        Fetch.class,
+        Push.class,
+        Add.class
 })
 public class Zit {
 }
