@@ -7,6 +7,8 @@ import club.qqtim.data.RefValue;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
+import static club.qqtim.common.ConstantVal.BASE_REFS_TAGS_PATH;
+
 /**
  * @title: Tag
  * @Author rezeros.github.io
@@ -29,7 +31,8 @@ public class Tag implements Runnable {
     @Override
     public void run() {
         if (id != null) {
-            ZitContext.updateRef(String.format("refs/tags/%s", name), new RefValue(false, id));
+            String tag = String.format(BASE_REFS_TAGS_PATH, name);
+            ZitContext.updateRef(tag, new RefValue(false, id));
         }
     }
 }

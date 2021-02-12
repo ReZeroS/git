@@ -51,11 +51,12 @@ public final class ConstantVal {
 
     public static final String BASE_PATH = "./";
 
-    public static final String HEADS_PATH = "ref/heads";
 
     public static final String BASE_FORMAT = "%s";
     public static final String BASE_REFS_PATH = "refs/%s";
     public static final String BASE_REFS_TAGS_PATH = "refs/tags/%s";
+
+    public static final String HEADS_PATH = "refs/heads";
     public static final String BASE_REFS_HEADS_PATH = HEADS_PATH + "/%s";
 
     public static final List<String> REF_REGISTRY_DIRECTORIES =

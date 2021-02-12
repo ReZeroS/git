@@ -194,7 +194,9 @@ public class ZitContext {
     }
 
     /**
-     * dereference is a symbol to determine whether deference the chain
+     * 1. if ref not exist, return refObject: {refName:ref, refValue: {falseSymbolic, null}}
+     *  it means if the ref not exist, refName will just return the param ref
+     * 2. dereference is an action symbol to determine whether deference the chain
      * or just return the ref directly
      **/
     private static RefObject getRefInternal(String ref, boolean dereference) {
@@ -209,6 +211,7 @@ public class ZitContext {
         }
         // determine whether it is an direct hash or reference symbolic
         boolean symbolic = (value != null && value.startsWith("ref:"));
+        // if a reference
         if (symbolic){
             // get the reference key like ··ref: ref/heads/main··
             // pick up the `ref/heads/main`
@@ -217,6 +220,7 @@ public class ZitContext {
                 return getRefInternal(value);
             }
         }
+        // if a direct hash
         return new RefObject(ref, new RefValue(symbolic, value));
     }
 
@@ -225,6 +229,7 @@ public class ZitContext {
     }
 
     public static void updateRef(String ref, RefValue refValue, boolean dereference) {
+        // pick up the origin ref value
         final String refName = Objects.requireNonNull(getRefInternal(ref, dereference)).getRefName();
         String value;
         if (refValue.getSymbolic()) {
@@ -232,6 +237,7 @@ public class ZitContext {
         } else {
             value = refValue.getValue();
         }
+        // update the origin ref with the new refValue
         FileUtil.createFile(value.getBytes(Charsets.UTF_8), String.format("%s/%s", ConstantVal.ZIT_DIR, refName));
     }
 
@@ -248,8 +254,8 @@ public class ZitContext {
     }
 
     /**
-     * @param refOrId ref or id
-     * @return ref
+     * determine whether ref not exist use deference false
+     * but get id finally will return the direct hash
      */
     public static String getId(String refOrId) {
         if (ConstantVal.HEAD_ALIAS.equals(refOrId)) {
@@ -257,10 +263,12 @@ public class ZitContext {
         }
         for (String path : ConstantVal.REF_REGISTRY_DIRECTORIES) {
             final String refValue = String.format(path, refOrId);
+
+            // pay attention, check use dereference false
             final RefValue ref = ZitContext.getRef(refValue, false);
             if (Objects.nonNull(ref.getValue())) {
-                // pay attention, check use dereference false but get use true
-                return ZitContext.getRef(refValue).getValue();
+                // while pick up dereference  as true
+                return ZitContext.getRef(refValue, true).getValue();
             }
         }
         if (RegexConstantVal.ALL_HEX.matcher(refOrId).find()) {

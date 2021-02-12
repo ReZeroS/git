@@ -51,8 +51,11 @@ public class ReadTree implements Runnable {
     }
 
     /**
-     * @param treeId
-     * @return key: path val: object id
+     * only one layer
+     * [
+     *    {key: path, val: object id},
+     *    {...}
+     * ]
      */
     public static Map<String, String> getTree(String treeId) {
         return getTree(treeId, ConstantVal.EMPTY);
@@ -83,9 +86,13 @@ public class ReadTree implements Runnable {
     }
 
 
+    /**
+     * updateWorking means whether reset the working area to the index description
+     */
     public static void readTree(String id, boolean updateWorking){
 
         Map<String, String> tree = getTree(id);
+
         String fileContent = new Gson().toJson(tree);
         FileUtil.createFile(fileContent, ConstantVal.INDEX);
 
@@ -95,7 +102,11 @@ public class ReadTree implements Runnable {
 
     }
 
+    /**
+     *  index must only have one layer
+     */
     public static void checkoutIndex(Map<String, String> index) {
+        // clean current dir
         emptyCurrentDir();
 
         for (Map.Entry<String, String> pathObjectId : index.entrySet()) {

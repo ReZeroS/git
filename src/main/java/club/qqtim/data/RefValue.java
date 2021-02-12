@@ -18,7 +18,7 @@ import lombok.ToString;
 public class RefValue {
 
     /**
-     * whether it's a symbolic or a direct ref.
+     * whether it's a reference symbolic or a direct ref.
      */
     private Boolean symbolic;
 

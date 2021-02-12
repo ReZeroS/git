@@ -106,14 +106,18 @@
 8. Now we get the first point: `checkout`. Pick a commit id from the `log` and checkout whether things as expected.
 
     - [fixed with getBytes(Charsets.UTF-8)] find bug todo: chinese file or dir name got messy code
-   
+    - args could be head alias, hash and ref(branch, tags, HEAD...)
+    
 9. `tag` will alias commit id, and at this time, you will get first inner core concept.
+    
     - [git-ref](https://git-scm.com/book/en/v2/Git-Internals-Git-References)
 
 10. todo: `zit lg` graph feature with Graphviz
 
 11. `zit branch name [id]` so familiar.
+    
     - Every ref under refs/heads will be treated as a branch.
+    - file content still just commit id, by default it is the head point
      
 12. `zit show` will use diff show changes detail while status only show simply changes info.
 

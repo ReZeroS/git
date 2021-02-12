@@ -54,6 +54,9 @@ public class Branch implements Runnable{
         }
     }
 
+    /**
+     * list all branches in the repository
+     */
     private List<String> iteratorBranchNames(){
         final List<RefObject> refObjects = ZitContext.iteratorRefs(ConstantVal.HEADS_PATH);
         return refObjects.stream()
@@ -62,12 +65,23 @@ public class Branch implements Runnable{
                 .collect(Collectors.toList());
     }
 
+
+    /**
+     * create a branch
+     * this will create a file with commitId content called branch name under the refs/heads directory
+     */
     private static void createBranch(String name, String startPoint) {
-        ZitContext.updateRef(String.format(ConstantVal.BASE_REFS_HEADS_PATH, name), new RefValue(false, startPoint));
+        String branch = String.format(ConstantVal.BASE_REFS_HEADS_PATH, name);
+        ZitContext.updateRef(branch, new RefValue(false, startPoint));
     }
 
+
+    /**
+     * whether the branch exist
+     */
     public static boolean existBranch(String name){
-        final RefValue ref = ZitContext.getRef(String.format(ConstantVal.BASE_REFS_HEADS_PATH, name));
+        String branch = String.format(ConstantVal.BASE_REFS_HEADS_PATH, name);
+        final RefValue ref = ZitContext.getRef(branch);
         return Objects.nonNull(ref.getValue());
     }
 

@@ -22,22 +22,23 @@ public class Checkout implements Runnable {
 
 
     @CommandLine.Parameters(index = "0")
-    private String commit;
+    private String ref;
 
 
 
     @Override
     public void run() {
-        checkout(this.commit);
+        checkout(this.ref);
     }
 
 
     /**
      * checkout command generate module by the commit describe
-     * @param name any thing can checkout
+     * @param name could be head alias, hash and ref(branch, tags, HEAD...)
      */
     private void checkout(String name) {
         String id = ZitContext.getId(name);
+        // get the name reference commit
         final CommitObject commit = Commit.getCommit(id);
         ReadTree.readTree(commit.getTree(), true);
 
