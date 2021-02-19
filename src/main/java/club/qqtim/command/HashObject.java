@@ -38,13 +38,8 @@ public class HashObject implements Callable<String> {
     }
 
     private String doHashObject() {
-        try {
-            byte[] fileContents = Files.toByteArray(file);
-            return hashObject(fileContents, this.type);
-        } catch (IOException e) {
-            log.error(e.toString());
-        }
-        return null;
+        byte[] fileContents = FileUtil.getFileAsBytes(file);
+        return hashObject(fileContents, this.type);
     }
 
     public static String hashObject(byte[] fileContents) {

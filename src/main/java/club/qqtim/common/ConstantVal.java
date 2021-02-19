@@ -12,7 +12,9 @@ public final class ConstantVal {
     // action type
     public static final String SYNC = "SYNC";
     public static final String PLUS = "PLUS";
+    public static final String PLUS_SYMBOL = "+";
     public static final String MINUS = "MINUS";
+    public static final String MINUS_SYMBOL = "-";
 
 
     // ref type

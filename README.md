@@ -36,7 +36,7 @@
    - Java nio 包的 `Files` class 也同样提供了类似的功能, `walk` 获取的目录是以传入 PATH 开头的相对目录
    - 配合 walk 可用的 `relative, resolve, System.lineSeparator` 等   
 
-6. diff 算法没搞明白（-_- 菜的浑身发抖），暂时收集到这些资料，找了网上的一个实现，后续有时间理解下这里然后再决定重写一版
+6. diff 算法没搞明白（-_- 菜的浑身发抖），暂时收集到这些资料，~~找了网上的一个实现~~ (2020.02.19)自己已经试着写了一版diff ( ･᷅ὢ･᷄ )，后续有时间优化下，详情见 DiffUtil
    - `doc` 文件夹下的工具和 paper
    - blog 
       - https://blog.jcoglan.com/2017/02/12/the-myers-diff-algorithm-part-1/
@@ -68,6 +68,8 @@
             else:
                    x = V[k - 1] + 1
             ```
+        - 注意斜线必定不可能为起点，因为斜线不消耗步数（上一步走到斜线必定会走（白嫖）完（因为探讨的是 k 的最远达而最终点的最近可达点）），所以只能是斜线为终点，不可能作为起点
+        - 上面这个推论用在回溯上就是如果发现上个节点比当前节点的 x, y 都小，那么可以直接 diagonal 到x 或 y 与前面一点相同时，这时应该最多只需一步便可到达目标节点
 ## Usage
 
 0. `alias zit='java -jar ../zit-1.0-SNAPSHOT-shaded.jar'` alias the zit executable file.
@@ -126,3 +128,5 @@
 14. `zit commit` will call `write tree` and update head pointer to the commit id.
     - first time it will create default branch: `main` and will rewrite the HEAD file content to the commit id
     - the merge HEAD
+    
+15. `zit status` 

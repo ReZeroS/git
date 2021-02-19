@@ -183,4 +183,18 @@ public final class FileUtil {
         }
         return value;
     }
+
+
+    /**
+     * convert file content to byte[]
+     */
+    public static byte[] getFileAsBytes(File file){
+        try {
+            return Files.toByteArray(file);
+        } catch (IOException e) {
+            log.error(e.toString());
+        }
+        return null;
+    }
+
 }

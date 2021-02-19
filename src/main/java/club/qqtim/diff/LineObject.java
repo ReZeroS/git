@@ -1,7 +1,6 @@
 package club.qqtim.diff;
 
-import club.qqtim.diff.algorithm.Equalizer;
-import lombok.AllArgsConstructor;
+import club.qqtim.common.ConstantVal;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class LineObject implements Equalizer<LineObject> {
+public class LineObject  {
 
     /**
      * sync, plus, minus
@@ -38,11 +37,17 @@ public class LineObject implements Equalizer<LineObject> {
 
     @Override
     public String toString() {
-        return index + " " + lineContent;
+        String actionTxt = ConstantVal.EMPTY;
+        if (ConstantVal.SYNC.equals(this.action)) {
+            actionTxt = ConstantVal.SINGLE_SPACE;
+        }
+        if (ConstantVal.PLUS.equals(this.action)) {
+            actionTxt = ConstantVal.PLUS_SYMBOL;
+        }
+        if (ConstantVal.MINUS.equals(this.action)) {
+            actionTxt = ConstantVal.MINUS_SYMBOL;
+        }
+        return actionTxt + ConstantVal.SINGLE_SPACE + index + ConstantVal.SINGLE_SPACE + lineContent;
     }
 
-    @Override
-    public boolean sameLine(LineObject b) {
-        return this.lineContent.equals(b.getLineContent());
-    }
 }

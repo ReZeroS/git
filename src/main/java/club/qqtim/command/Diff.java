@@ -71,17 +71,16 @@ public class Diff implements Callable<String> {
     }
 
     public static Map<String, String> getWorkingTree() {
-        final Path basePath = Paths.get(ConstantVal.BASE_PATH);
+        final Path basePath = Paths.get("src");
         try {
             return Files.walk(basePath, Integer.MAX_VALUE)
                     .filter(Files::isRegularFile)
                     .map(path -> basePath.relativize(path).toString())
                     .filter(ZitContext::isNotIgnored)
-                    .collect(Collectors.toMap(Function.identity(), path -> {
-                        HashObject hashObject = new HashObject();
-                        hashObject.setFile(new File(path));
-                        hashObject.setType(ConstantVal.BLOB);
-                        return hashObject.call();
+                    .collect(Collectors.toMap(key -> basePath.resolve(key).toString(), path -> {
+                        final File file = new File(basePath.resolve(path).toString());
+                        final byte[] fileContent = FileUtil.getFileAsBytes(file);
+                        return HashObject.hashObject(fileContent, ConstantVal.BLOB);
                     }));
         } catch (IOException e) {
             log.error(e.toString());

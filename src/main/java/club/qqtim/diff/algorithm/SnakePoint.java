@@ -2,23 +2,22 @@ package club.qqtim.diff.algorithm;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
- * @title: TinySnake
+ * @title: SnakePoint
  * @Author lijie78
  * @Date: 2021/2/19
  * @Version 1.0.0
  */
 @Data
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class Snake {
+public class SnakePoint {
 
-    private SnakePoint start;
+    private Integer x;
 
-    private SnakePoint middle;
-
-    private SnakePoint end;
-
+    private Integer y;
 }
