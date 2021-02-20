@@ -126,7 +126,23 @@
 13. `zit add` will add paths which could be file or directory into stage file: `.zit/index`.
  
 14. `zit commit` will call `write tree` and update head pointer to the commit id.
-    - first time it will create default branch: `main` and will rewrite the HEAD file content to the commit id
-    - the merge HEAD
     
-15. `zit status` 
+    - first time it will create default branch: `main` and will rewrite the HEAD file content to the commit id
+    - the merge HEAD will be deleted and leave the message into commit message
+    
+15. `zit status` this command will tell you what is the situation you are in now.
+    
+    - if you are not detached HEAD, it will log your current HEAD pointed branch first,
+    - after that, if you are working in merge, it will log the merge hash id,
+    - then it will log changes to be committed which will diff head tree to index(stage items),
+    - finally, it will log changes not staged for the next commit which diff index(stage) to work tree.
+    
+16. `zit diff` the default diff algorithm is myers diff without linear space refinement optimized
+
+17. `zit reset` just change head to the current commit, the difference between it and `checkout` is the  // todo
+
+18. `zit merge` will check if the merge base equals the head, it will use fast-forward to merge 
+    
+    - if fast-forward work, it will be no need to commit
+    - if not work, we will use three way merge to merge the 1. merge base 2. head tree 3. other tree
+    

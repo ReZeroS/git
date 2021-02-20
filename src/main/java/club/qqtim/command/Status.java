@@ -6,6 +6,7 @@ import club.qqtim.diff.DiffUtil;
 import club.qqtim.diff.SimplyChange;
 import club.qqtim.util.FileUtil;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -29,7 +30,7 @@ public class Status implements Runnable {
         final String headId = ZitContext.getId(ConstantVal.HEAD_ALIAS);
         final String branchName = ZitContext.getBranchName();
         if (Objects.nonNull(branchName)) {
-            log.info("On branch {}", branchName);
+            log.info("On branch * {}", branchName);
         } else {
             if (headId != null) {
                 log.info("HEAD detached at {}", headId.substring(0, 11));
@@ -44,8 +45,8 @@ public class Status implements Runnable {
 
 
         final String indexContent = FileUtil.getFileAsString(ConstantVal.INDEX, ConstantVal.NONE);
-        Map<String, String> indexItems = new Gson().fromJson(indexContent, Map.class);
 
+        Map<String, String> indexItems = new Gson().fromJson(indexContent, new TypeToken<Map<String, String>>(){}.getType());
 
         if (headId != null) {
             log.info("\nChanges to be committed:\n");

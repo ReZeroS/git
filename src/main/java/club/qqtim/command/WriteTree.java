@@ -8,6 +8,7 @@ import club.qqtim.util.FileUtil;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -42,7 +43,7 @@ public class WriteTree implements Callable<String> {
     private String writeTree() {
         // read the index dict
         final String indexContent = FileUtil.getFileAsString(ConstantVal.INDEX, ConstantVal.NONE);
-        Map<String, String> indexItems = new Gson().fromJson(indexContent, Map.class);
+        Map<String, String> indexItems = new Gson().fromJson(indexContent, new TypeToken<Map<String, String>>(){}.getType());
 
 
         /* construct the tree map called indexAsTree like the below

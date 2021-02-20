@@ -34,6 +34,9 @@ import java.util.stream.Collectors;
 public class ZitContext {
 
 
+    /**
+     * behind commit id is the first parent while other parents will at the end before each commit found their first parent
+     */
     public static List<String> iteratorCommitsAndParents(Collection<String> ids) {
         Deque<String> idsDeque = new LinkedList<>(ids);
         Set<String> visitedIds = new HashSet<>();

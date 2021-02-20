@@ -3,6 +3,7 @@ package club.qqtim.diff;
 import club.qqtim.command.HashObject;
 import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
+import club.qqtim.diff.algorithm.MyersDiff;
 import club.qqtim.diff.algorithm.Snake;
 import club.qqtim.diff.algorithm.SnakePoint;
 import com.google.common.base.Charsets;
@@ -87,12 +88,17 @@ public class DiffUtil {
     private static List<LineObject> diffBlobs(String from, String to) {
         final List<LineObject> fromLineObjects = convertObjectContentToLines(from);
         final List<LineObject> toLineObjects = convertObjectContentToLines(to);
+        return diffBlobs(fromLineObjects, toLineObjects);
+    }
+
+    private static List<LineObject> diffBlobs(List<LineObject> fromLineObjects, List<LineObject> toLineObjects) {
         try {
-            return diff(fromLineObjects, toLineObjects);
+            // strategy pattern, default is myers diff
+            return new MyersDiff().diff(fromLineObjects, toLineObjects);
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.toString());
         }
-
         return Collections.emptyList();
     }
 
@@ -172,7 +178,7 @@ public class DiffUtil {
 
     /**
      * key: path val: blob content
-     *
+     * Three-way merge
      * @param headTree source tree
      * @param otherTree   target tree
      * @return merged tree
@@ -189,225 +195,118 @@ public class DiffUtil {
     }
 
     /**
+     * diff3
      * @param fromBlob from blob id
      * @param toBlob   to blob id
      * @return merged blob content
+     * https://blog.jcoglan.com/2017/05/08/merging-with-diff3/
      */
-    private static String mergeBlobs(String baseTree, String fromBlob, String toBlob) {
+    public static String mergeBlobs(String baseBlob, String fromBlob, String toBlob) {
 
-        //todo Three-way merge
-        final List<LineObject> lineObjects = diffBlobs(fromBlob, toBlob);
-        return lineObjects.stream().map(LineObject::getLineContent).collect(Collectors.joining(System.lineSeparator()));
+        final List<LineObject> originalLines = convertObjectContentToLines(baseBlob);
+        final List<LineObject> headLines = convertObjectContentToLines(fromBlob);
+        final List<LineObject> otherLines = convertObjectContentToLines(toBlob);
+        return mergeBlobs(originalLines, headLines, otherLines);
     }
 
+    public static String mergeBlobs(List<LineObject> originalLines, List<LineObject> headLines, List<LineObject> otherLines) {
 
-
-
-    /**
-     * complexity of both time and space : O ((N + M)D)
-     * k = x - y
-     * 0 - 1 - 2 - 3 // x
-     * |
-     * 1
-     * |
-     * 2  // y
-     */
-    public static List<LineObject> diff(List<LineObject> fromLineObjects, List<LineObject> targetLineObjects) {
-
-        // init step
-        int finalStep = 0;
-        // we set from as x anxious
-        final int fromLineCount = fromLineObjects.size();
-
-        // we set target as y anxious
-        final int targetLineCount = targetLineObjects.size();
-
-        // sum of from and target lines count
-        final int totalLineCount = targetLineCount + fromLineCount;
-
-        int vSize = Math.max(fromLineCount, targetLineCount) * 2 + 1;
-
-        // do snapshot for v while iterate step
-        int [][] vList = new int[totalLineCount + 1][vSize];
-
-        // k can be zero, so plus one
-        //todo optimize for minimize v.length
-        final int[] v = new int[vSize];
-
-        // set the previous start point
-        v[v.length / 2 + 1] = 0;
-
-        boolean foundShortest = false;
-        for (int step = 0; step <= totalLineCount; step++) {
-
-            // little trick, java can not use negative number as array index
-            int negativeStep = v.length / 2 - step;
-            int positiveStep = v.length / 2 + step;
-            for (int k = negativeStep; k >= 0 && k <= positiveStep; k += 2) {
-                int kAimD = k - v.length / 2;
-                boolean down = (kAimD == -step || (kAimD != step && v[k - 1] < v[k + 1]));
-
-                int xStart = down? v[k + 1]: v[k - 1];
-
-                int xEnd = down? xStart: xStart + 1;
-                int yEnd = xEnd - kAimD;
-                // diagonal
-                while ((0 <= xEnd && xEnd < fromLineCount) && (0 <= yEnd && yEnd < targetLineCount)
-                        && (fromLineObjects.get(xEnd).getLineContent().equals(targetLineObjects.get(yEnd).getLineContent()))){
-                    xEnd++; yEnd++;
-                }
-                v[k] = xEnd;
-                if (xEnd >= fromLineCount && yEnd >= targetLineCount) {
-                    foundShortest = true;
-                }
-            }
-            // do snapshot for v
-            vList[step] = Arrays.copyOf(v, v.length);
-            if (foundShortest) {
-                finalStep = step;
-                break;
-            }
-        }
         List<LineObject> result = new ArrayList<>();
 
-        if (foundShortest) {
-            Stack<Snake> snakeStack = generateSnakes(fromLineCount, targetLineCount, vList, finalStep);
+        // generate two match sets
+        Map<Integer, Integer> matchBaseHead = diffBlobs(new ArrayList<>(originalLines), new ArrayList<>(headLines))
+                .stream().filter(e -> ConstantVal.SYNC.equals(e.getAction()))
+                .collect(Collectors.toMap(LineObject::getIndex, LineObject::getAnotherIndex));
+        Map<Integer, Integer> matchBaseOther = diffBlobs(new ArrayList<>(originalLines), new ArrayList<>(otherLines))
+                .stream().filter(e -> ConstantVal.SYNC.equals(e.getAction()))
+                .collect(Collectors.toMap(LineObject::getIndex, LineObject::getAnotherIndex));
 
-            // the final step, let's rock
-            SnakePoint realStartPoint = new SnakePoint(0, 0);
-            while(!snakeStack.empty()) {
-                final Snake snake = snakeStack.pop();
-                final SnakePoint start = snake.getStart();
-                final SnakePoint middle = snake.getMiddle();
-                final SnakePoint end = snake.getEnd();
 
-                result.addAll(compareSnakePoint(realStartPoint, start, fromLineObjects, targetLineObjects));
-                result.addAll(compareSnakePoint(start, middle, fromLineObjects, targetLineObjects));
-                result.addAll(compareSnakePoint(middle, end, fromLineObjects, targetLineObjects));
 
-                realStartPoint = end;
-            }
 
-            return result;
-        }
 
-        fromLineObjects.forEach(line -> line.setAction(ConstantVal.MINUS));
-        targetLineObjects.forEach(line -> line.setAction(ConstantVal.PLUS));
-        result.addAll(fromLineObjects);
-        result.addAll(targetLineObjects);
-        return result;
+
+
+
+
+
+
+        return result.stream().map(LineObject::getLineContent).collect(Collectors.joining(System.lineSeparator()));
     }
 
 
-    /**
-     * let's do backtrack to generate the shortest path
-     * now vList has total record we need: every step the (k, x) val
-     *
-     *    start(K-1) -- mid(K)
-     *                         \
-     *                          \
-     *                           end
-     *
-     *
-     */
-    private static Stack<Snake> generateSnakes(int fromLineCount, int targetLineCount, int[][] vList, int finalStep) {
-
-        Stack<Snake> snakeStack = new Stack<>();
-        int fromEndX = fromLineCount;
-        int targetEndY = targetLineCount;
-        // step >= 0 or (fromEndX > 0  && targetEndY> 0)
-        for (int step = finalStep; fromEndX > 0  && targetEndY > 0; step--) {
-            final int[] v = vList[step];
-
-            int negativeStep = v.length / 2 - step;
-            int positiveStep = v.length / 2 + step;
-
-            int k = fromEndX - targetEndY;
-            int kIndex = v.length / 2 + k;
-
-            // set current k as end point
-            int xEnd = v[kIndex];
-            int yEnd = xEnd - k;
-
-            boolean down = (k == negativeStep || (k != positiveStep && v[kIndex - 1] < v[kIndex + 1]));
-
-            int xStart = v[down? kIndex + 1: kIndex - 1];
-            int yStart = xStart - (down? k + 1: k -1);
-
-            int xMid = down? xStart: xStart + 1;
-            int yMid = xMid - k;
-
-            final Snake snake = new Snake();
-            snake.setStart(new SnakePoint(xStart, yStart));
-            snake.setMiddle(new SnakePoint(xMid, yMid));
-            snake.setEnd(new SnakePoint(xEnd, yEnd));
-            snakeStack.push(snake);
-
-            fromEndX = xStart;
-            targetEndY = yStart;
-        }
-        return snakeStack;
-    }
-
-    public static List<LineObject> compareSnakePoint
-            (SnakePoint from, SnakePoint end, List<LineObject> fromLineObjects, List<LineObject> targetLineObjects) {
-        // mid equals end
-        if (from.equals(end)) {
-            return Collections.emptyList();
-        }
-
-        List<LineObject> result = new ArrayList<>();
-        // mid to end
-        if (!from.getX().equals(end.getX()) && !from.getY().equals(end.getY())) {
-            for (int fromX = from.getX(); fromX < end.getX(); fromX++) {
-                final LineObject lineObject = fromLineObjects.get(fromX);
-                lineObject.setAction(ConstantVal.SYNC);
-                result.add(lineObject);
-            }
-        } else {
-            // start to mid
-            if (!from.getX().equals(end.getX())) {
-                final LineObject lineObject = fromLineObjects.get(from.getX());
-                lineObject.setAction(ConstantVal.MINUS);
-                result.add(lineObject);
-            } else if (!from.getY().equals(end.getY())) {
-                final LineObject lineObject = targetLineObjects.get(from.getY());
-                lineObject.setAction(ConstantVal.PLUS);
-                result.add(lineObject);
-            }
-        }
-        return result;
-    }
-
-
-    /**
-     * test method
-     */
     public static void main(String[] args) {
-        String a = "A-B-C-A-B-B-A";
-        String b = "C-B-A-B-A-C";
-
-        final String[] aArray = a.split("-");
-        final String[] bArray = b.split("-");
-        List<LineObject> fromLineObjects = new ArrayList<>();
-        List<LineObject> targetLineObjects = new ArrayList<>();
-        for (int i = 0; i < aArray.length; i++) {
-            int index = i + 1;
-            final LineObject lineObject = new LineObject();
-            lineObject.setIndex(index);
-            lineObject.setLineContent(aArray[i]);
-            fromLineObjects.add(lineObject);
-        }
-        for (int i = 0; i < bArray.length; i++) {
-            int index = i + 1;
-            final LineObject lineObject = new LineObject();
-            lineObject.setIndex(index);
-            lineObject.setLineContent(bArray[i]);
-            targetLineObjects.add(lineObject);
-        }
-        final List<LineObject> diff = diff(fromLineObjects, targetLineObjects);
-        diff.forEach(line -> log.debug(line.toString()));
+        String head = "4d2bdcbc2da4dbec446864512dc7903071b89f3d";
+        String base = "4f90761edb43368f13e7691838bf1be1033ee579";
+        String other = "5a1a58f54065a36616127a65516a53964c8630d0";
+        mergeBlobs(base, head, other);
     }
 
+
+    private static int findNextSyncLine(int index, List<LineObject> fromDiffBase) {
+        for (int i = index; i < fromDiffBase.size(); i++) {
+            if (ConstantVal.SYNC.equals(fromDiffBase.get(i).getAction())) {
+                return i;
+            }
+        }
+        // not found
+        return -1;
+    }
+
+
+//
+//    // compare and get two diffs
+//    final List<LineObject> fromDiffBase = diffBlobs(baseBlob, fromBlob);
+//    final List<LineObject> toDiffBase = diffBlobs(baseBlob, toBlob);
+//
+//    // split into different block
+//        for (int i = 0, j = 0; i < fromDiffBase.size() && j < toDiffBase.size(); i++) {
+//        int blockStartFrom = i, blockStartTo = j;
+//        int blockEndFrom, blockEndTo;
+//        // if not common sync
+//        boolean commonSync = fromDiffBase.get(i).getIndex().equals(toDiffBase.get(j).getIndex())
+//                && ConstantVal.SYNC.equals(fromDiffBase.get(i).getAction())
+//                && ConstantVal.SYNC.equals(toDiffBase.get(j).getAction());
+//
+//        // diff block
+//        if (!commonSync) {
+//            // find their first common sync
+//            // 1. find from first sync
+//            i = findNextSyncLine(i, fromDiffBase);
+//            // 2. find to first sync
+//            j = findNextSyncLine(j, fromDiffBase);
+//
+//            // 3. sync from and to
+//            while(i < fromDiffBase.size()
+//                    && fromDiffBase.get(i).getIndex() < toDiffBase.get(j).getIndex()) {
+//                i++;
+//            }
+//            while(j < toDiffBase.size()
+//                    && toDiffBase.get(j).getIndex() < fromDiffBase.get(i).getIndex()) {
+//                j++;
+//            }
+//
+//            blockEndFrom = i;
+//            blockEndTo = j;
+//        } else {
+//            // common block
+//            while(i < fromDiffBase.size() && j < toDiffBase.size()
+//                    && ConstantVal.SYNC.equals(fromDiffBase.get(i).getAction())
+//                    && ConstantVal.SYNC.equals(toDiffBase.get(j).getAction())
+//                    && toDiffBase.get(j).getIndex().equals(fromDiffBase.get(i).getIndex())) {
+//                i ++; j++;
+//            }
+//
+//            blockEndFrom = i;
+//            blockEndTo = j;
+//        }
+//
+//        // insert blocks: origin head other
+//
+//
+//
+//
+//
+//    }
 
 }

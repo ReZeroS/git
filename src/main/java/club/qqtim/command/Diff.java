@@ -5,6 +5,7 @@ import club.qqtim.context.ZitContext;
 import club.qqtim.diff.DiffUtil;
 import club.qqtim.util.FileUtil;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -45,7 +46,7 @@ public class Diff implements Callable<String> {
     @Override
     public String call() {
         String objectId;
-        Map<String, String> treeFrom = new HashMap<>(), treeTo;
+        Map<String, String> treeFrom = new HashMap<>(16), treeTo;
         if (this.commit != null) {
             objectId = ZitContext.getId(this.commit);
             treeFrom = ReadTree.getTree(Commit.getCommit(objectId).getTree());
@@ -53,7 +54,7 @@ public class Diff implements Callable<String> {
         final String indexContent = FileUtil.getFileAsString(ConstantVal.INDEX, ConstantVal.NONE);
 
         if (cached) {
-            treeTo = new Gson().fromJson(indexContent, Map.class);
+            treeTo = new Gson().fromJson(indexContent, new TypeToken<Map<String, String>>(){}.getType());
             if (this.commit == null) {
                 objectId = ZitContext.getId(ConstantVal.HEAD_ALIAS);
                 treeFrom = ReadTree.getTree(Commit.getCommit(objectId).getTree());
@@ -61,7 +62,7 @@ public class Diff implements Callable<String> {
         } else {
             treeTo = Diff.getWorkingTree();
             if (this.commit == null) {
-                treeFrom = new Gson().fromJson(indexContent, Map.class);
+                treeFrom = new Gson().fromJson(indexContent, new TypeToken<Map<String, String>>(){}.getType());
             }
         }
 
@@ -71,7 +72,7 @@ public class Diff implements Callable<String> {
     }
 
     public static Map<String, String> getWorkingTree() {
-        final Path basePath = Paths.get("src");
+        final Path basePath = Paths.get(ConstantVal.BASE_PATH);
         try {
             return Files.walk(basePath, Integer.MAX_VALUE)
                     .filter(Files::isRegularFile)

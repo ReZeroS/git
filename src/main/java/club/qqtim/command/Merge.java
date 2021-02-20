@@ -30,21 +30,22 @@ public class Merge implements Runnable {
 
     @Override
     public void run() {
-        final String headRef = ZitContext.getRef(ConstantVal.HEAD).getValue();
+        final String headRefCommitId = ZitContext.getRef(ConstantVal.HEAD).getValue();
 
-        final String mergeBase = MergeBase.getMergeBase(this.other, headRef);
+        final String mergeBase = MergeBase.getMergeBase(this.other, headRefCommitId);
         final CommitObject otherCommit = Commit.getCommit(this.other);
 
-        if (headRef.equals(mergeBase)) {
+        if (headRefCommitId.equals(mergeBase)) {
             ReadTree.readTree(otherCommit.getTree(), true);
             ZitContext.updateRef(ConstantVal.HEAD, new RefValue(false, this.other));
             log.info("Fast-forward merge, no need to commit");
+            return;
         }
 
         ZitContext.updateRef(ConstantVal.MERGE_HEAD, new RefValue(false, this.other));
 
         final CommitObject mergeBaseCommit = Commit.getCommit(mergeBase);
-        final CommitObject headCommit = Commit.getCommit(headRef);
+        final CommitObject headCommit = Commit.getCommit(headRefCommitId);
         readTreeMerged(mergeBaseCommit.getTree(), headCommit.getTree(), otherCommit.getTree(), true);
         log.info("merged in working tree\nPlease commit");
     }
@@ -56,7 +57,8 @@ public class Merge implements Runnable {
 
     private void readTreeMerged(String baseTree, String headTree, String otherTree, boolean updateWorking) {
 
-        Map<String, String> pathBlobs = DiffUtil.mergeTrees(ReadTree.getTree(baseTree), ReadTree.getTree(headTree), ReadTree.getTree(otherTree));
+        Map<String, String> pathBlobs = DiffUtil.mergeTrees(
+                ReadTree.getTree(baseTree), ReadTree.getTree(headTree), ReadTree.getTree(otherTree));
         String fileContent = new Gson().toJson(pathBlobs);
         if (updateWorking) {
             ReadTree.checkoutIndex(pathBlobs);

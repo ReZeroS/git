@@ -25,6 +25,11 @@ public class LineObject  {
     private Integer index;
 
     /**
+     * if action is sync, the above index is from original, and this index is from head
+     */
+    private Integer anotherIndex;
+
+    /**
      * can not be null
      * line content which contains the whole content of the current line
      */
@@ -47,7 +52,11 @@ public class LineObject  {
         if (ConstantVal.MINUS.equals(this.action)) {
             actionTxt = ConstantVal.MINUS_SYMBOL;
         }
-        return actionTxt + ConstantVal.SINGLE_SPACE + index + ConstantVal.SINGLE_SPACE + lineContent;
+        // action index
+        return actionTxt + ConstantVal.SINGLE_SPACE
+                + index + (ConstantVal.SYNC.equals(this.action) ?
+                String.format("[%d]", anotherIndex): ConstantVal.EMPTY)
+                + ConstantVal.SINGLE_SPACE + lineContent;
     }
 
 }
