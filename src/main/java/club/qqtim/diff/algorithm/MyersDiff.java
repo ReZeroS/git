@@ -234,7 +234,7 @@ public class MyersDiff implements DiffAlgorithm {
             targetLineObjects.add(lineObject);
         }
 //        final List<LineObject> diff = new MyersDiff().diff(fromLineObjects, targetLineObjects);
-        DiffUtil.mergeBlobs(fromLineObjects, targetLineObjects, null);
+//        DiffUtil.mergeBlobs(fromLineObjects, targetLineObjects, null);
 //        diff.forEach(line -> log.debug(line.toString()));
     }
 

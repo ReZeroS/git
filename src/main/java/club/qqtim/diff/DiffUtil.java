@@ -4,8 +4,6 @@ import club.qqtim.command.HashObject;
 import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
 import club.qqtim.diff.algorithm.MyersDiff;
-import club.qqtim.diff.algorithm.Snake;
-import club.qqtim.diff.algorithm.SnakePoint;
 import com.google.common.base.Charsets;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -221,18 +218,105 @@ public class DiffUtil {
                 .stream().filter(e -> ConstantVal.SYNC.equals(e.getAction()))
                 .collect(Collectors.toMap(LineObject::getIndex, LineObject::getAnotherIndex));
 
+        // all start from zero
+        int originLineNumber = 0, headLineNumber = 0, otherLineNumber = 0;
 
+        for (;;) {
+            int i = nextMisMatch(originLineNumber, headLineNumber,
+                    otherLineNumber, headLines, otherLines, matchBaseHead, matchBaseOther);
 
+            int origin = 0, head = 0, other = 0;
 
+            if (i == 1) {
+                final MergePoint mergePoint = nextMatch(originLineNumber, originalLines, matchBaseHead, matchBaseOther);
+                origin = mergePoint.getOrigin();
+                head = mergePoint.getHead();
+                other = mergePoint.getOther();
+            } else if (i > 1) {
+                origin = originLineNumber + i;
+                head = headLineNumber + i;
+                other = otherLineNumber + i;
+            }
 
+            if (origin == 0 || head == 0 || other == 0) {
+                break;
+            }
 
+            // chunk
+            buildChunk(originLineNumber, headLineNumber, otherLineNumber,
+                    origin - 1, head - 1, other - 1, originalLines, headLines, otherLines, result);
 
+            originLineNumber = origin - 1;
+            headLineNumber = head - 1;
+            otherLineNumber = other - 1;
+        }
 
-
-
+        // build final chunk
+        buildChunk(originLineNumber, headLineNumber, otherLineNumber,
+                originalLines.size(), headLines.size(), otherLines.size(),
+                originalLines, headLines, otherLines, result);
 
         return result.stream().map(LineObject::getLineContent).collect(Collectors.joining(System.lineSeparator()));
     }
+
+    private static void buildChunk(int originLineNumber, int headLineNumber,
+                                   int otherLineNumber, int origin, int head, int other,
+                                   List<LineObject> originalLines, List<LineObject> headLines,
+                                   List<LineObject> otherLines, List<LineObject> result) {
+        final List<LineObject> originChunk = originalLines.subList(originLineNumber, origin);
+        final List<LineObject> headChunk = headLines.subList(headLineNumber, head);
+        final List<LineObject> otherChunk = otherLines.subList(otherLineNumber, other);
+
+        if (headChunk.equals(otherChunk)) {
+            result.addAll(originChunk);
+        } else if (originChunk.equals(headChunk)) {
+            result.addAll(originChunk);
+        } else if (originChunk.equals(otherChunk)) {
+            result.addAll(originChunk);
+        } else {
+            result.add(ConstantVal.MERGE_CONFLICT.get(ConstantVal.HEAD_CONFLICT));
+
+            result.addAll(headChunk);
+
+            result.add(ConstantVal.MERGE_CONFLICT.get(ConstantVal.ORIGIN_CONFLICT));
+
+            result.addAll(otherChunk);
+
+            result.add(ConstantVal.MERGE_CONFLICT.get(ConstantVal.OTHER_CONFLICT));
+        }
+    }
+
+
+    private static int nextMisMatch(int indexOrigin, int indexHead, int indexOther,
+                          List<LineObject> headLines, List<LineObject> otherLines,
+                          Map<Integer, Integer> matchBaseHead, Map<Integer, Integer> matchBaseOther){
+        for (int i = 1; i <= headLines.size() && i <= otherLines.size(); i++) {
+            final Integer head = matchBaseHead.get(indexOrigin + i);
+            final Integer other = matchBaseOther.get(indexOrigin + i);
+
+            if (Objects.isNull(head) || !head.equals(indexHead + i)
+                    || Objects.isNull(other) || !other.equals(indexOther + i)) {
+                return i;
+            }
+
+        }
+        return 0;
+    }
+
+    private static MergePoint nextMatch(int indexOrigin, List<LineObject> originLines,
+                                        Map<Integer, Integer> matchBaseHead, Map<Integer, Integer> matchBaseOther) {
+        for (int i = indexOrigin + 1; i <= originLines.size(); i++) {
+            final Integer head = matchBaseHead.get(i);
+            final Integer other = matchBaseOther.get(i);
+
+            if (Objects.nonNull(head) && Objects.nonNull(other)) {
+                return new MergePoint(i, head, other);
+            }
+        }
+        return new MergePoint(0, 0, 0);
+
+    }
+
 
 
     public static void main(String[] args) {

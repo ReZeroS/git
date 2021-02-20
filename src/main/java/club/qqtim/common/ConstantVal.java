@@ -1,7 +1,12 @@
 package club.qqtim.common;
 
+import club.qqtim.diff.LineObject;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author rezeros.github.io
@@ -15,6 +20,7 @@ public final class ConstantVal {
     public static final String PLUS_SYMBOL = "+";
     public static final String MINUS = "MINUS";
     public static final String MINUS_SYMBOL = "-";
+    public static final String CONFLICT = "CONFLICT";
 
 
     // ref type
@@ -75,5 +81,31 @@ public final class ConstantVal {
     public static final String REFS_DIR_REAL = ZIT_DIR + "/" + REFS_DIR;
 
     public static final String INDEX = ZIT_DIR + "/index";
+
+    // merge conflict
+
+    public static final String HEAD_CONFLICT = "<<<<<<<<<<";
+    public static final String OTHER_CONFLICT = ">>>>>>>>>>";
+    public static final String ORIGIN_CONFLICT = "==========";
+
+    public static Map<String, LineObject> MERGE_CONFLICT = new HashMap<>(4);
+
+    static {
+        final LineObject headLine = new LineObject();
+        headLine.setAction(CONFLICT);
+        headLine.setLineContent(HEAD_CONFLICT);
+        MERGE_CONFLICT.put(HEAD_CONFLICT, headLine);
+
+        final LineObject originLine = new LineObject();
+        originLine.setAction(CONFLICT);
+        originLine.setLineContent(ORIGIN_CONFLICT);
+        MERGE_CONFLICT.put(ORIGIN_CONFLICT, originLine);
+
+        final LineObject otherLine = new LineObject();
+        otherLine.setAction(CONFLICT);
+        otherLine.setLineContent(OTHER_CONFLICT);
+        MERGE_CONFLICT.put(OTHER_CONFLICT, otherLine);
+
+    }
 
 }

@@ -2,7 +2,10 @@ package club.qqtim.diff;
 
 import club.qqtim.common.ConstantVal;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 /**
  * @title: LineObject
@@ -12,6 +15,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"lineContent"})
 public class LineObject  {
 
     /**
@@ -54,9 +58,10 @@ public class LineObject  {
         }
         // action index
         return actionTxt + ConstantVal.SINGLE_SPACE
-                + index + (ConstantVal.SYNC.equals(this.action) ?
-                String.format("[%d]", anotherIndex): ConstantVal.EMPTY)
+                + (Objects.isNull(index)? ConstantVal.EMPTY: index)
+                    + (ConstantVal.SYNC.equals(this.action) ? String.format("[%d]", anotherIndex): ConstantVal.EMPTY)
                 + ConstantVal.SINGLE_SPACE + lineContent;
     }
+
 
 }
