@@ -85,18 +85,15 @@ public class ZitContext {
     }
 
     //https://www.leshenko.net/p/ugit/#fetch-remote-refs-objects
-
     public static List<String> iteratorObjectsInCommits(List<String> objectIds) {
         List<String> result = new ArrayList<>();
         final Set<String> visited = new HashSet<>();
 
         final List<String> commitIds = iteratorCommitsAndParents(objectIds);
         for (String commitId : commitIds) {
-            // todo yield commitid
             result.add(commitId);
             final CommitObject commit = Commit.getCommit(commitId);
             if (!visited.contains(commit.getTree())) {
-                //todo yield from iter_objects_in_tree (commit.tree)
                 List<String> traverseTree = new ArrayList<>();
                 iteratorObjectsInTree(commit.getTree(), visited, traverseTree);
                 result.addAll(traverseTree);
@@ -140,6 +137,8 @@ public class ZitContext {
     public static List<RefObject> iteratorRefs(boolean deference) {
         return iteratorRefs(ConstantVal.EMPTY, deference);
     }
+
+
     /**
      * return all ref objects in the context
      *
@@ -182,7 +181,8 @@ public class ZitContext {
     public static RefValue getRef(String ref) {
         return getRef(ref, true);
     }
-/**
+
+    /**
      * dereference it recursively for content   ref: <refname>
      *
      * @param ref ref
@@ -199,8 +199,8 @@ public class ZitContext {
     /**
      * 1. if ref not exist, return refObject: {refName:ref, refValue: {falseSymbolic, null}}
      *  it means if the ref not exist, refName will just return the param ref
-     * 2. dereference is an action symbol to determine whether deference the chain
-     * or just return the ref directly
+     * 2. dereference is an action symbol to determine
+     * whether deference the chain to return the final hash id or just return the ref directly
      **/
     private static RefObject getRefInternal(String ref, boolean dereference) {
         String value = null;

@@ -49,7 +49,7 @@ public class Fetch implements Runnable {
         FileUtil.setRootPathContext(remotePath);
 
         {
-            final List<RefObjValue> remoteRefs = getRemoteRefs(remotePath, ConstantVal.HEADS_PATH);
+            final List<RefObjValue> remoteRefs = getRemoteRefs(remotePath, REMOTE_REFS_BASE);
 
             final List<String> objectIds = ZitContext.iteratorObjectsInCommits(remoteRefs.stream()
                     .map(RefObjValue::getValue).distinct().collect(Collectors.toList()));
@@ -68,15 +68,19 @@ public class Fetch implements Runnable {
     }
 
     public static List<RefObjValue> getRemoteRefs(String remotePath) {
-        return getRemoteRefs(remotePath, ConstantVal.EMPTY);
+        FileUtil.setRootPathContext(remotePath);
+
+        final List<RefObjValue> remoteRefs = getRemoteRefs(remotePath, ConstantVal.EMPTY);
+
+        FileUtil.removeRootPathContext();
+
+        return remoteRefs;
     }
 
     public static List<RefObjValue> getRemoteRefs(String remotePath, String prefix) {
-        FileUtil.setRootPathContext(remotePath);
 
         final List<RefObject> refObjects = ZitContext.iteratorRefs(prefix);
 
-        FileUtil.removeRootPathContext();
         return refObjects.stream().map(refObject -> {
             final RefObjValue refObjValue = new RefObjValue();
             refObjValue.setRefName(refObject.getRefName());

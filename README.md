@@ -6,6 +6,10 @@
 
 对 `git` 挺感兴趣，就照着实现了一个java版本的，感谢原作者。
 
+- 2021.02.21，原作者在文中使用了一些辅助工具, `zit` 项目尽力去实现了这些部分，比如 `diff` 和 `merge` 的算法，但是能力时间有限，这里只写了较为简单的版本, 比如没有线性优化的 `myers diff` 等, 所以欢迎优化
+  
+- 此外作者的原项目用了一些 `Pythonic` 语法糖，这里也尽可能在 `java zit` 中简易的方式实现，方便其他语言的开发者阅读
+
 ## TODO
 
 1. git hash-object todo. When real Git stores objects it does a few extra things, such as writing the size of the object to the file as well, compressing them and dividing the objects into 256 directories. This is done to avoid having directories with huge number of files, which can hurt performance.
@@ -21,7 +25,7 @@
 
 3. 工具库用了 `guava`, 里面的方法都是 `@Beta`, 所以后续看看是不是要提取下或者用 `zerobox` 作为依赖
 
-4. `write-tree` 几个注意点
+4. 关于 `write-tree` 几个注意点
 
    - 对象分两种，一个 是 `tree` 代表目录且仅返回一级目录的情况, 一个是 `blob` 即文件
    - 在递归过程中不要忘记了路径的变换要带上前置路径来确保总是使用同一个位置的相对路径
@@ -70,6 +74,7 @@
             ```
         - 注意斜线必定不可能为起点，因为斜线不消耗步数（上一步走到斜线必定会走（白嫖）完（因为探讨的是 k 的最远达而最终点的最近可达点）），所以只能是斜线为终点，不可能作为起点
         - 上面这个推论用在回溯上就是如果发现上个节点比当前节点的 x, y 都小，那么可以直接 diagonal 到x 或 y 与前面一点相同时，这时应该最多只需一步便可到达目标节点
+
 ## Usage
 
 0. `alias zit='java -jar ../zit-1.0-SNAPSHOT-shaded.jar'` alias the zit executable file.
@@ -144,5 +149,8 @@
 18. `zit merge` will check if the merge base equals the head, it will use fast-forward to merge 
     
     - if fast-forward work, it will be no need to commit
-    - if not work, we will use three way merge to merge the 1. merge base 2. head tree 3. other tree
+    - if not work, we will use diff3 merge to merge the **merge base**, **head tree**, **other tree**
+    - pay attention: diff3 will leave merge_head in the zit root directory and that means you need to commit manually.
+    - `zit merge-base` is used to help the merge command find the first common parent commit of the commits which will be merged. But you also can use this command to do debug task.
     
+19. `zit fetch` 
