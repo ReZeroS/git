@@ -99,49 +99,6 @@ public class DiffUtil {
         return Collections.emptyList();
     }
 
-    private static int findShortestEditCount(List<LineObject> fromLineObjects, List<LineObject> toLineObjects) {
-        final int n = fromLineObjects.size();
-        final int m = toLineObjects.size();
-        int max = n + m;
-
-//        final int[] v = new int[max * 2 + 2];
-        final int[] v = new int[max + 2];
-        v[1] = 0;
-        for (int d = 0; d < max + 1; d++) {
-            // for k in range(-D, D + 1, 2):
-            // after liner space optimize
-            for (int k = -(d - 2 * Integer.max(0, d - m)); k < (d - 2 * Integer.max(0, d - n)); ++k) {
-                int x;
-                final int kIndex = convertIndex(k, v.length);
-                final int kPlusIndex = convertIndex(k + 1, v.length);
-                final int kMinusIndex = convertIndex(k - 1, v.length);
-                if (k == -d || (k != d && v[kMinusIndex] < v[kPlusIndex])) {
-                    x = v[kPlusIndex];
-                } else {
-                    x = v[kMinusIndex];
-                }
-                int y = x - k;
-                while (x < n && y < m && Objects.equals(fromLineObjects.get(x), toLineObjects.get(y))) {
-                    x++;
-                    y++;
-                }
-                v[kIndex] = x;
-                if (x >= n && y >= m) {
-                    return d;
-                }
-            }
-        }
-        return -1;
-    }
-
-    private static int convertIndex(int k, int length) {
-        if (k < 0) {
-            return length - k;
-        }
-        return k;
-
-    }
-
     private static List<LineObject> convertObjectContentToLines(String objectId) {
         if (Objects.isNull(objectId)) {
             return Collections.emptyList();
@@ -218,21 +175,23 @@ public class DiffUtil {
                 .stream().filter(e -> ConstantVal.SYNC.equals(e.getAction()))
                 .collect(Collectors.toMap(LineObject::getIndex, LineObject::getAnotherIndex));
 
-        // all start from zero
+        // all start from zero: base pointer
         int originLineNumber = 0, headLineNumber = 0, otherLineNumber = 0;
 
         for (;;) {
             int i = nextMisMatch(originLineNumber, headLineNumber,
                     otherLineNumber, headLines, otherLines, matchBaseHead, matchBaseOther);
-
+            // offset
             int origin = 0, head = 0, other = 0;
-
+            // we’re already in a non-matching chunk and we need to find the start of the next matching one
             if (i == 1) {
                 final MergePoint mergePoint = nextMatch(originLineNumber, originalLines, matchBaseHead, matchBaseOther);
                 origin = mergePoint.getOrigin();
                 head = mergePoint.getHead();
                 other = mergePoint.getOther();
             } else if (i > 1) {
+                // we’ve found the start of the next non-match
+                // and we can emit a chunk up to i steps from our current line offsets
                 origin = originLineNumber + i;
                 head = headLineNumber + i;
                 other = otherLineNumber + i;
@@ -270,9 +229,9 @@ public class DiffUtil {
         if (headChunk.equals(otherChunk)) {
             result.addAll(originChunk);
         } else if (originChunk.equals(headChunk)) {
-            result.addAll(originChunk);
+            result.addAll(otherChunk);
         } else if (originChunk.equals(otherChunk)) {
-            result.addAll(originChunk);
+            result.addAll(headChunk);
         } else {
             result.add(ConstantVal.MERGE_CONFLICT.get(ConstantVal.HEAD_CONFLICT));
 
@@ -318,15 +277,6 @@ public class DiffUtil {
     }
 
 
-
-    public static void main(String[] args) {
-        String head = "4d2bdcbc2da4dbec446864512dc7903071b89f3d";
-        String base = "4f90761edb43368f13e7691838bf1be1033ee579";
-        String other = "5a1a58f54065a36616127a65516a53964c8630d0";
-        mergeBlobs(base, head, other);
-    }
-
-
     private static int findNextSyncLine(int index, List<LineObject> fromDiffBase) {
         for (int i = index; i < fromDiffBase.size(); i++) {
             if (ConstantVal.SYNC.equals(fromDiffBase.get(i).getAction())) {
@@ -337,60 +287,5 @@ public class DiffUtil {
         return -1;
     }
 
-
-//
-//    // compare and get two diffs
-//    final List<LineObject> fromDiffBase = diffBlobs(baseBlob, fromBlob);
-//    final List<LineObject> toDiffBase = diffBlobs(baseBlob, toBlob);
-//
-//    // split into different block
-//        for (int i = 0, j = 0; i < fromDiffBase.size() && j < toDiffBase.size(); i++) {
-//        int blockStartFrom = i, blockStartTo = j;
-//        int blockEndFrom, blockEndTo;
-//        // if not common sync
-//        boolean commonSync = fromDiffBase.get(i).getIndex().equals(toDiffBase.get(j).getIndex())
-//                && ConstantVal.SYNC.equals(fromDiffBase.get(i).getAction())
-//                && ConstantVal.SYNC.equals(toDiffBase.get(j).getAction());
-//
-//        // diff block
-//        if (!commonSync) {
-//            // find their first common sync
-//            // 1. find from first sync
-//            i = findNextSyncLine(i, fromDiffBase);
-//            // 2. find to first sync
-//            j = findNextSyncLine(j, fromDiffBase);
-//
-//            // 3. sync from and to
-//            while(i < fromDiffBase.size()
-//                    && fromDiffBase.get(i).getIndex() < toDiffBase.get(j).getIndex()) {
-//                i++;
-//            }
-//            while(j < toDiffBase.size()
-//                    && toDiffBase.get(j).getIndex() < fromDiffBase.get(i).getIndex()) {
-//                j++;
-//            }
-//
-//            blockEndFrom = i;
-//            blockEndTo = j;
-//        } else {
-//            // common block
-//            while(i < fromDiffBase.size() && j < toDiffBase.size()
-//                    && ConstantVal.SYNC.equals(fromDiffBase.get(i).getAction())
-//                    && ConstantVal.SYNC.equals(toDiffBase.get(j).getAction())
-//                    && toDiffBase.get(j).getIndex().equals(fromDiffBase.get(i).getIndex())) {
-//                i ++; j++;
-//            }
-//
-//            blockEndFrom = i;
-//            blockEndTo = j;
-//        }
-//
-//        // insert blocks: origin head other
-//
-//
-//
-//
-//
-//    }
 
 }
