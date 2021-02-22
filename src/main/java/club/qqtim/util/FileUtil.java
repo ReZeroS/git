@@ -7,16 +7,20 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 import com.google.common.primitives.Chars;
+import jnr.posix.POSIXFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * @author rezeros.github.io
@@ -27,14 +31,12 @@ public final class FileUtil {
     private FileUtil() {
     }
 
-    private static final ThreadLocal<String> rootPathContext = new ThreadLocal<>();
 
     public static void setRootPathContext(String path) {
-        rootPathContext.set(path);
+        POSIXFactory.getPOSIX().chdir(path);
     }
-    public static void removeRootPathContext() {
-        rootPathContext.remove();
-    }
+
+
 
     public static void mkdir(String dirName) {
         boolean mkdir = new File(dirName).mkdir();
@@ -85,10 +87,6 @@ public final class FileUtil {
     }
 
     public static void createFile(byte[] fileContents, String fileName) {
-        final String rootPath = rootPathContext.get();
-        if (!Objects.isNull(rootPath)) {
-            fileName = Paths.get(rootPath).resolve(fileName).toString();
-        }
         File hashObject = new File(fileName);
         try {
             // first create the parent directory
@@ -153,12 +151,6 @@ public final class FileUtil {
 
 
     public static boolean isFile(String path) {
-        final String rootPath = rootPathContext.get();
-        if (!Objects.isNull(rootPath)) {
-            String fileName = Paths.get(rootPath).resolve(path).toString();
-            File file = new File(fileName);
-            return file.isFile();
-        }
         return new File(path).isFile();
     }
 
@@ -196,5 +188,12 @@ public final class FileUtil {
         }
         return null;
     }
+
+
+    public static Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
+        return java.nio.file.Files.walk(start, maxDepth, options);
+    }
+
+
 
 }

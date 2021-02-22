@@ -154,7 +154,7 @@ public class ZitContext {
         final Path refsDir = Paths.get(ConstantVal.REFS_DIR);
         final List<String> pathList;
         try {
-            pathList = Files.walk(refsPath, Integer.MAX_VALUE)
+            pathList = FileUtil.walk(refsPath, Integer.MAX_VALUE)
                     .filter(Files::isRegularFile)
                     .map(path -> refsDir.resolve(refsPath.relativize(path)).toString()).collect(Collectors.toList());
         } catch (IOException e) {

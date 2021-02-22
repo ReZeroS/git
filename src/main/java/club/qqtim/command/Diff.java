@@ -74,7 +74,7 @@ public class Diff implements Callable<String> {
     public static Map<String, String> getWorkingTree() {
         final Path basePath = Paths.get(ConstantVal.BASE_PATH);
         try {
-            return Files.walk(basePath, Integer.MAX_VALUE)
+            return FileUtil.walk(basePath, Integer.MAX_VALUE)
                     .filter(Files::isRegularFile)
                     .map(path -> basePath.relativize(path).toString())
                     .filter(ZitContext::isNotIgnored)

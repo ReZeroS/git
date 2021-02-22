@@ -75,6 +75,8 @@
         - 注意斜线必定不可能为起点，因为斜线不消耗步数（上一步走到斜线必定会走（白嫖）完（因为探讨的是 k 的最远达而最终点的最近可达点）），所以只能是斜线为终点，不可能作为起点
         - 上面这个推论用在回溯上就是如果发现上个节点比当前节点的 x, y 都小，那么可以直接 diagonal 到x 或 y 与前面一点相同时，这时应该最多只需一步便可到达目标节点
 
+7. Java 切换目录比想象得要费劲，可以试着了解些这个包 `com.github.jnr/jnr-posix`
+
 ## Usage
 
 0. `alias zit='java -jar ../zit-1.0-SNAPSHOT-shaded.jar'` alias the zit executable file.
@@ -153,4 +155,4 @@
     - pay attention: diff3 will leave merge_head in the zit root directory and that means you need to commit manually.
     - `zit merge-base` is used to help the merge command find the first common parent commit of the commits which will be merged. But you also can use this command to do debug task.
     
-19. `zit fetch` 
+19. `zit fetch`,

@@ -69,7 +69,7 @@ public class Add implements Runnable{
 
     private void addDirectory(JsonObject asJsonObject, String file) {
         try {
-            Files.walk(Paths.get(file), Integer.MAX_VALUE)
+            FileUtil.walk(Paths.get(file), Integer.MAX_VALUE)
                     .filter(Files::isRegularFile)
                     .forEach(regularFile -> addFile(asJsonObject, regularFile.toString()));
         } catch (IOException e) {

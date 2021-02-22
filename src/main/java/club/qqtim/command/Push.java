@@ -74,11 +74,12 @@ public class Push implements Runnable{
             ZitContext.pushObject(objectId, remotePath);
         }
 
+        final String currentDir = FileUtil.getCurrentDir();
         FileUtil.setRootPathContext(remotePath);
         {
             ZitContext.updateRef(refName, new RefValue(false, localRef));
         }
-        FileUtil.removeRootPathContext();
+        FileUtil.setRootPathContext(currentDir);
 
     }
 
