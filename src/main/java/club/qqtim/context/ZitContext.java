@@ -117,12 +117,9 @@ public class ZitContext {
         if (objectExists(objectId)) {
             return;
         }
-        final Path remoteDirectory = Paths.get(remoteDir).resolve(ConstantVal.OBJECTS_DIR).resolve(objectId);
-        try {
-            Files.copy(remoteDirectory, Paths.get(ConstantVal.OBJECTS_DIR).resolve(objectId));
-        } catch (IOException e) {
-            log.error(e.toString());
-        }
+        final Path remoteFile = Paths.get(remoteDir).resolve(ConstantVal.OBJECTS_DIR).resolve(objectId);
+        final Path localFile = Paths.get(ConstantVal.OBJECTS_DIR).resolve(objectId);
+        FileUtil.copy(remoteFile, localFile);
     }
 
 
@@ -156,7 +153,8 @@ public class ZitContext {
         try {
             pathList = FileUtil.walk(refsPath, Integer.MAX_VALUE)
                     .filter(Files::isRegularFile)
-                    .map(path -> refsDir.resolve(refsPath.relativize(path)).toString()).collect(Collectors.toList());
+                    .map(path -> refsDir.resolve(refsPath.relativize(path)).toString())
+                    .map(FileUtil::convertUnixPath).collect(Collectors.toList());
         } catch (IOException e) {
             return Collections.emptyList();
         }

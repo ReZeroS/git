@@ -62,10 +62,15 @@ public class Push implements Runnable{
 
         }
 
+        final String currentDir = FileUtil.getCurrentDir();
+        FileUtil.setRootPathContext(remotePath);
 
         final List<String> knownRemoteRefs = remoteRefs.stream().map(RefObjValue::getValue).filter(ZitContext::objectExists).collect(Collectors.toList());
-
         final Set<String> remoteObjects = new HashSet<>(ZitContext.iteratorObjectsInCommits(knownRemoteRefs));
+
+        FileUtil.setRootPathContext(currentDir);
+
+
         final Set<String> localObjects = new HashSet<>(ZitContext.iteratorObjectsInCommits(Collections.singletonList(localRef)));
         final List<String> objectsToPush = localObjects.stream().filter(object -> !remoteObjects.contains(object)).collect(Collectors.toList());
 
@@ -74,7 +79,6 @@ public class Push implements Runnable{
             ZitContext.pushObject(objectId, remotePath);
         }
 
-        final String currentDir = FileUtil.getCurrentDir();
         FileUtil.setRootPathContext(remotePath);
         {
             ZitContext.updateRef(refName, new RefValue(false, localRef));

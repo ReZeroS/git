@@ -2,11 +2,13 @@ package club.qqtim.util;
 
 import club.qqtim.common.ConstantVal;
 import club.qqtim.context.ZitContext;
+import club.qqtim.util.handler.PosixHandler;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteSource;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 import com.google.common.primitives.Chars;
+import jnr.posix.POSIX;
 import jnr.posix.POSIXFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,8 +34,10 @@ public final class FileUtil {
     }
 
 
-    public static void setRootPathContext(String path) {
-        POSIXFactory.getPOSIX().chdir(path);
+    public static void setRootPathContext(String target) {
+        System.setProperty("user.dir", target);
+        POSIX posix = POSIXFactory.getPOSIX(new PosixHandler(), true);
+        posix.chdir(target);
     }
 
 
@@ -157,12 +161,20 @@ public final class FileUtil {
 
 
     public static void copy(String from, String to) {
+        copy(Paths.get(from), Paths.get(to));
+    }
+
+    public static void copy(Path from, Path to) {
         try {
-            java.nio.file.Files.copy(Paths.get(from), Paths.get(to));
+            final File fromFile = from.toFile();
+            final File toFile = to.toFile();
+            Files.createParentDirs(toFile);
+            Files.copy(fromFile, toFile);
         } catch (IOException e) {
             log.error(e.toString());
         }
     }
+
 
     public static String readFileFirstLine(File file) {
         String value;
@@ -195,5 +207,10 @@ public final class FileUtil {
     }
 
 
-
+    public static String convertUnixPath(String path) {
+        if (Objects.isNull(path)) {
+            return null;
+        }
+        return path.replace(File.separatorChar, '/');
+    }
 }

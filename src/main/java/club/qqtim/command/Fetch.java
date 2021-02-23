@@ -45,15 +45,21 @@ public class Fetch implements Runnable {
     }
 
     public static void fetch(String remotePath) {
-        final String currentDir = FileUtil.getCurrentDir();
-        FileUtil.setRootPathContext(remotePath);
 
         {
+
             log.debug("Will fetch the following refs:");
+
+            final String currentDir = FileUtil.getCurrentDir();
+            FileUtil.setRootPathContext(remotePath);
+
             final List<RefObjValue> remoteRefs = getRemoteRefs(remotePath, REMOTE_REFS_BASE);
 
-            final List<String> objectIds = ZitContext.iteratorObjectsInCommits(remoteRefs.stream()
-                    .map(RefObjValue::getValue).distinct().collect(Collectors.toList()));
+            final List<String> objectIds = ZitContext.iteratorObjectsInCommits(
+                    remoteRefs.stream().map(RefObjValue::getValue).distinct().collect(Collectors.toList()));
+
+            FileUtil.setRootPathContext(currentDir);
+
             objectIds.forEach(objectId -> ZitContext.fetchObjectIfMissing(objectId, remotePath));
 
             remoteRefs.forEach(remoteRef -> {
@@ -65,7 +71,6 @@ public class Fetch implements Runnable {
             });
         }
 
-        FileUtil.setRootPathContext(currentDir);
     }
 
     public static List<RefObjValue> getRemoteRefs(String remotePath) {
