@@ -58,7 +58,7 @@ public class WriteTree implements Callable<String> {
           }
 
          */
-        Map<String, Object> indexAsTree = new HashMap<>();
+        Map<String, Object> indexAsTree = new HashMap<>(16);
         for (Map.Entry<String, String> pathObjectId : indexItems.entrySet()) {
             String path = pathObjectId.getKey();
             String objectId = pathObjectId.getValue();
@@ -68,7 +68,7 @@ public class WriteTree implements Callable<String> {
 
             Map<String, Object> current = indexAsTree;
             for (String dirPath : dirPaths) {
-                current = (Map<String, Object>) current.computeIfAbsent(dirPath, e -> new HashMap<>());
+                current = (Map<String, Object>) current.computeIfAbsent(dirPath, e -> new HashMap<>(2));
             }
             current.put(fileName, objectId);
         }

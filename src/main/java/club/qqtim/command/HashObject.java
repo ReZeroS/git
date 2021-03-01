@@ -51,8 +51,7 @@ public class HashObject implements Callable<String> {
      * type could be: blob, tree, commit
      */
     public static String hashObject(byte[] fileContents, String type) {
-        char nullChar = 0;
-        byte[] targetFileContents = Bytes.concat(type.getBytes(Charsets.UTF_8), Chars.toByteArray(nullChar), fileContents);
+        byte[] targetFileContents = Bytes.concat(type.getBytes(Charsets.UTF_8), Chars.toByteArray(ConstantVal.NULL_CHAR), fileContents);
         byte[] digest = new byte[0];
         try {
             digest = MessageDigest.getInstance(ConstantVal.HASH_ALGORITHM).digest(targetFileContents);

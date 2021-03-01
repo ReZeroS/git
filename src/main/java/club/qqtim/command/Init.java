@@ -8,7 +8,7 @@ import picocli.CommandLine;
 
 /**
  * @author rezeros.github.io
- * 初始化 .zit 目录
+ * init .zit directory
  */
 @Data
 @CommandLine.Command(name = "init")

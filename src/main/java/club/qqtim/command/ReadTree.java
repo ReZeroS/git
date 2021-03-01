@@ -41,6 +41,29 @@ public class ReadTree implements Runnable {
     }
 
 
+    public static void readTree(String id){
+        readTree(id, false);
+    }
+
+
+    /**
+     * updateWorking means whether reset the working area to the index description
+     */
+    public static void readTree(String id, boolean updateWorking){
+
+        Map<String, String> tree = getTree(id);
+
+        String fileContent = new Gson().toJson(tree);
+        FileUtil.createFile(fileContent, ConstantVal.INDEX);
+
+        if (updateWorking) {
+            checkoutIndex(tree);
+        }
+
+    }
+
+
+
     public static List<ZitObject> iteratorTreeEntries(String treeId) {
         final String tree = ZitContext.getObjectAsString(treeId, "tree");
         assert tree != null;
@@ -81,26 +104,6 @@ public class ReadTree implements Runnable {
 
 
 
-    public static void readTree(String id){
-        readTree(id, false);
-    }
-
-
-    /**
-     * updateWorking means whether reset the working area to the index description
-     */
-    public static void readTree(String id, boolean updateWorking){
-
-        Map<String, String> tree = getTree(id);
-
-        String fileContent = new Gson().toJson(tree);
-        FileUtil.createFile(fileContent, ConstantVal.INDEX);
-
-        if (updateWorking) {
-            checkoutIndex(tree);
-        }
-
-    }
 
     /**
      *  index must only have one layer

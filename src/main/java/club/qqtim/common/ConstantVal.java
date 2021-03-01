@@ -2,7 +2,6 @@ package club.qqtim.common;
 
 import club.qqtim.diff.LineObject;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +46,9 @@ public final class ConstantVal {
 
 
     // symbol type
+
+    public static final char NULL_CHAR = 0;
+
     public static final String STAR = "*";
 
     public static final String EMPTY = "";
