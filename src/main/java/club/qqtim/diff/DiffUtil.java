@@ -250,6 +250,7 @@ public class DiffUtil {
                           List<LineObject> headLines, List<LineObject> otherLines,
                           Map<Integer, Integer> matchBaseHead, Map<Integer, Integer> matchBaseOther){
         for (int i = 1; i <= headLines.size() && i <= otherLines.size(); i++) {
+            // got mapped index in head and other
             final Integer head = matchBaseHead.get(indexOrigin + i);
             final Integer other = matchBaseOther.get(indexOrigin + i);
 
@@ -277,6 +278,13 @@ public class DiffUtil {
     }
 
 
+
+
+
+
+
+
+
     private static int findNextSyncLine(int index, List<LineObject> fromDiffBase) {
         for (int i = index; i < fromDiffBase.size(); i++) {
             if (ConstantVal.SYNC.equals(fromDiffBase.get(i).getAction())) {
@@ -286,6 +294,35 @@ public class DiffUtil {
         // not found
         return -1;
     }
+
+    /**
+     * test method
+     */
+    public static void main(String[] args) {
+//        String origin = "celery-garlic-onions-salmon-tomatoes-wine";
+//        String head = "celery-salmon-tomatoes-garlic-onions-wine";
+//        String other = "celery-salmon-garlic-onions-tomatoes-wine";
+        String origin = "1-2-3-4-5-6";
+        String head = "1-4-5-2-3-6";
+        String other = "1-2-4-5-3-6";
+
+        List<LineObject> originLineObjects = new ArrayList<>();
+        List<LineObject> headLineObjects = new ArrayList<>();
+        List<LineObject> otherLineObjects = new ArrayList<>();
+        final String[] originArr = origin.split("-");
+        final String[] headArr = head.split("-");
+        final String[] otherArr = other.split("-");
+        for (int i = 0; i < originArr.length; i++) {
+            int index = i + 1;
+            originLineObjects.add(new LineObject(index, originArr[i]));
+            headLineObjects.add(new LineObject(index, headArr[i]));
+            otherLineObjects.add(new LineObject(index, otherArr[i]));
+        }
+        final String mergeDetails = mergeBlobs(originLineObjects, headLineObjects, otherLineObjects);
+        log.info(mergeDetails);
+    }
+
+
 
 
 }
