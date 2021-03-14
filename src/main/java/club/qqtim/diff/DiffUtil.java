@@ -176,42 +176,44 @@ public class DiffUtil {
                 .collect(Collectors.toMap(LineObject::getIndex, LineObject::getAnotherIndex));
 
         // all start from zero: base pointer
-        int originLineNumber = 0, headLineNumber = 0, otherLineNumber = 0;
+        int originStart = 0, headStart = 0, otherStart = 0;
 
         for (;;) {
-            int i = nextMisMatch(originLineNumber, headLineNumber,
-                    otherLineNumber, headLines, otherLines, matchBaseHead, matchBaseOther);
             // offset
-            int origin = 0, head = 0, other = 0;
+            int i = nextMisMatch(originStart, headStart,
+                    otherStart, headLines, otherLines, matchBaseHead, matchBaseOther);
+            // end index
+            int originEnd = 0, headEnd = 0, otherEnd = 0;
             // we’re already in a non-matching chunk and we need to find the start of the next matching one
             if (i == 1) {
-                final MergePoint mergePoint = nextMatch(originLineNumber, originalLines, matchBaseHead, matchBaseOther);
-                origin = mergePoint.getOrigin();
-                head = mergePoint.getHead();
-                other = mergePoint.getOther();
+                final MergePoint mergePoint = nextMatch(originStart, originalLines, matchBaseHead, matchBaseOther);
+                originEnd = mergePoint.getOrigin();
+                headEnd = mergePoint.getHead();
+                otherEnd = mergePoint.getOther();
             } else if (i > 1) {
                 // we’ve found the start of the next non-match
                 // and we can emit a chunk up to i steps from our current line offsets
-                origin = originLineNumber + i;
-                head = headLineNumber + i;
-                other = otherLineNumber + i;
+                originEnd = originStart + i;
+                headEnd = headStart + i;
+                otherEnd = otherStart + i;
             }
 
-            if (origin == 0 || head == 0 || other == 0) {
+            if (originEnd == 0 || headEnd == 0 || otherEnd == 0) {
                 break;
             }
 
             // chunk
-            buildChunk(originLineNumber, headLineNumber, otherLineNumber,
-                    origin - 1, head - 1, other - 1, originalLines, headLines, otherLines, result);
+            buildChunk(originStart, headStart, otherStart,
+                    originEnd - 1, headEnd - 1, otherEnd - 1,
+                    originalLines, headLines, otherLines, result);
 
-            originLineNumber = origin - 1;
-            headLineNumber = head - 1;
-            otherLineNumber = other - 1;
+            originStart = originEnd - 1;
+            headStart = headEnd - 1;
+            otherStart = otherEnd - 1;
         }
 
         // build final chunk
-        buildChunk(originLineNumber, headLineNumber, otherLineNumber,
+        buildChunk(originStart, headStart, otherStart,
                 originalLines.size(), headLines.size(), otherLines.size(),
                 originalLines, headLines, otherLines, result);
 
@@ -246,16 +248,16 @@ public class DiffUtil {
     }
 
 
-    private static int nextMisMatch(int indexOrigin, int indexHead, int indexOther,
+    private static int nextMisMatch(int originStart, int headStart, int otherStart,
                           List<LineObject> headLines, List<LineObject> otherLines,
                           Map<Integer, Integer> matchBaseHead, Map<Integer, Integer> matchBaseOther){
         for (int i = 1; i <= headLines.size() && i <= otherLines.size(); i++) {
             // got mapped index in head and other
-            final Integer head = matchBaseHead.get(indexOrigin + i);
-            final Integer other = matchBaseOther.get(indexOrigin + i);
+            final Integer head = matchBaseHead.get(originStart + i);
+            final Integer other = matchBaseOther.get(originStart + i);
 
-            if (Objects.isNull(head) || !head.equals(indexHead + i)
-                    || Objects.isNull(other) || !other.equals(indexOther + i)) {
+            if (Objects.isNull(head) || !head.equals(headStart + i)
+                    || Objects.isNull(other) || !other.equals(otherStart + i)) {
                 return i;
             }
 
@@ -263,9 +265,9 @@ public class DiffUtil {
         return 0;
     }
 
-    private static MergePoint nextMatch(int indexOrigin, List<LineObject> originLines,
+    private static MergePoint nextMatch(int originStart, List<LineObject> originLines,
                                         Map<Integer, Integer> matchBaseHead, Map<Integer, Integer> matchBaseOther) {
-        for (int i = indexOrigin + 1; i <= originLines.size(); i++) {
+        for (int i = originStart + 1; i <= originLines.size(); i++) {
             final Integer head = matchBaseHead.get(i);
             final Integer other = matchBaseOther.get(i);
 
@@ -299,12 +301,12 @@ public class DiffUtil {
      * test method
      */
     public static void main(String[] args) {
-//        String origin = "celery-garlic-onions-salmon-tomatoes-wine";
-//        String head = "celery-salmon-tomatoes-garlic-onions-wine";
-//        String other = "celery-salmon-garlic-onions-tomatoes-wine";
-        String origin = "1-2-3-4-5-6";
-        String head = "1-4-5-2-3-6";
-        String other = "1-2-4-5-3-6";
+        String origin = "celery-garlic-onions-salmon-tomatoes-wine";
+        String head = "celery-salmon-tomatoes-garlic-onions-wine";
+        String other = "celery-salmon-garlic-onions-tomatoes-wine";
+//        String origin = "1-2-3-4-5-6";
+//        String head = "1-4-5-2-3-6";
+//        String other = "1-2-4-5-3-6";
 
         List<LineObject> originLineObjects = new ArrayList<>();
         List<LineObject> headLineObjects = new ArrayList<>();

@@ -13,7 +13,7 @@ Besides, the follow links maybe help you too.
  - [Nick Butler](http://simplygenius.net/Article/DiffTutorial1) this post is short but enough to help you have a higher level to understand diff
  - [jcoglan](https://blog.jcoglan.com/2017/02/12/the-myers-diff-algorithm-part-1/) this posts make a detail description about the diff.
  - [visualize](https://blog.robertelder.org/diff-algorithm/) if you wanna have a debugger or visualization about diff algorithm, this will be a good choice.
- - [ppt](https://github.com/ReZeroS/zit/blob/main/doc/ZIT.pptx) I also made a short ppt about git, hope you would like it.
+ - [pdf](https://github.com/ReZeroS/zit/blob/main/doc/ZIT.pptx) I also made a short pdf about git, hope you would like it.
 If you feel interested about this project, you can post your idea on the discussion or just contact me with email.
 
 ## Usage
