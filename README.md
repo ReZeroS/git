@@ -1,4 +1,4 @@
-# [ZIT](https://github.com/ReZeroS/zit) development log
+# [GIT](https://github.com/ReZeroS/git) development log
 
 Thanks for the great tutorial: [https://www.leshenko.net/p/ugit](https://www.leshenko.net/p/ugit)
 
