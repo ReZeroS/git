@@ -4,7 +4,6 @@ Thanks for the great tutorial: [https://www.leshenko.net/p/ugit](https://www.les
 
 Thanks again Nikita!
   
-![Alt](https://repobeats.axiom.co/api/embed/0a3c0c8e625544d5b7cb100c336412c6d3cc90bc.svg "Repobeats analytics image")
 
 ## Resource
 
