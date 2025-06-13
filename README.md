@@ -6,6 +6,8 @@ Thanks again, Nikita!
 
 ## Resources
 
+https://deepwiki.com/ReZeroS/git/1-overview
+
 I found some good reference materials and placed them in the `./doc` directory.
 
 Additionally, these links might be helpful:
