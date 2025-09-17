@@ -11,7 +11,7 @@ I've compiled useful reference materials in the `./doc` directory. Additionally,
 - [Nick Butler](http://simplygenius.net/Article/DiffTutorial1): A concise overview of diff algorithms
 - [jcoglan](https://blog.jcoglan.com/2017/02/12/the-myers-diff-algorithm-part-1/): Detailed explanation of the Myers diff algorithm
 - [Visualization](https://blog.robertelder.org/diff-algorithm/): Helpful tool for visualizing and debugging diff algorithms
-- [PDF](https://github.com/ReZeroS/git/blob/main/doc/ZIT.pptx): A brief pdf about Git that you might find interesting
+- [PDF](https://github.com/ReZeroS/git/blob/main/doc/ZIT.pdf): A brief pdf about Git that you might find interesting
 
 If you're interested in this project, feel free to share your ideas in the discussion forum or contact me via email.
 
